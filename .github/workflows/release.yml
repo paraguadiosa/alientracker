@@ -1,5 +1,6 @@
 name: Publish Release
-on: [push]
+# Manual only: the registry image belongs to the upstream project.
+on: [workflow_dispatch]
 env:
   REGISTRY_IMAGE: daya0576/beaverhabits
 

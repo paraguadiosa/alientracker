@@ -1,8 +1,7 @@
 name: Fly Deploy
+# Manual only: this project deploys via a local systemd service, not fly.io.
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
 
 jobs:
   pre-deploy-test:
