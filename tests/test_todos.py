@@ -1,11 +1,13 @@
 import asyncio
+import datetime
 
 from nicegui import ui
 from nicegui.testing import User
 
+from beaverhabits.frontend.index_page import index_page_ui
 from beaverhabits.frontend.todo_page import todo_page_ui
 from beaverhabits.storage.todo import DictTodoList
-from beaverhabits.views import STARTER_TODOS, seed_todo_list
+from beaverhabits.views import STARTER_TODOS, dummy_habit_list, seed_todo_list
 
 
 def make_todo_list() -> DictTodoList:
@@ -149,3 +151,20 @@ async def test_todo_page_interactions(user: User):
     user.find("todo-delete").click()
     await user.should_see("List is empty.")
     assert todo_list.todos == []
+
+
+async def test_index_page_shows_habits_and_todos(user: User):
+    today = datetime.date(2024, 5, 1)
+    days = [today - datetime.timedelta(days=i) for i in reversed(range(5))]
+    habits = dummy_habit_list(days)
+    todo_list = make_todo_list()
+    await todo_list.add("Ir al médico")
+
+    @ui.page("/")
+    def page():
+        index_page_ui(days, habits, todo_list)
+
+    await user.open("/")
+    await user.should_see("Habits")
+    await user.should_see("Todos")
+    await user.should_see("Ir al médico")

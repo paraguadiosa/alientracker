@@ -34,7 +34,9 @@ def todo_row(todo_list: DictTodoList, todo: DictTodo, refresh: Callable):
         delete.mark("todo-delete")
 
 
-def todo_page_ui(todo_list: DictTodoList):
+def todo_section(todo_list: DictTodoList):
+    """Todo list plus add form, without page layout. Embeddable in any page."""
+
     # The refreshable is defined per page build, so a refresh only re-renders
     # the current client and never touches other connected clients.
     @ui.refreshable
@@ -57,13 +59,17 @@ def todo_page_ui(todo_list: DictTodoList):
         name_input.value = ""
         todo_list_ui.refresh()
 
-    with layout(title="Todos"):
-        todo_list_ui()
+    todo_list_ui()
 
-        with ui.row().classes("w-full items-center no-wrap"):
-            name_input = ui.input(placeholder="New todo...").classes("grow")
-            name_input.on("keydown.enter", add)
-            name_input.mark("todo-input")
-            add_btn = ui.button("Add", on_click=add)
-            add_btn.props('aria-label="Add todo"')
-            add_btn.mark("todo-add")
+    with ui.row().classes("w-full items-center no-wrap"):
+        name_input = ui.input(placeholder="New todo...").classes("grow")
+        name_input.on("keydown.enter", add)
+        name_input.mark("todo-input")
+        add_btn = ui.button("Add", on_click=add)
+        add_btn.props('aria-label="Add todo"')
+        add_btn.mark("todo-add")
+
+
+def todo_page_ui(todo_list: DictTodoList):
+    with layout(title="Todos"):
+        todo_section(todo_list)
