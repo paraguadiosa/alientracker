@@ -28,6 +28,7 @@ from beaverhabits.storage import get_user_dict_storage, session_storage
 from beaverhabits.storage.dict import DAY_MASK, DictHabitList
 from beaverhabits.storage.meta import GUI_ROOT_PATH
 from beaverhabits.storage.storage import Habit, HabitList, HabitListBuilder, HabitStatus
+from beaverhabits.storage.todo import DictTodoList
 from beaverhabits.utils import generate_short_hash, ratelimiter, send_email
 
 user_storage = get_user_dict_storage()
@@ -88,6 +89,27 @@ async def get_user_habit_list(user: User) -> HabitList:
             status_code=404,
             detail="The habit list data may be broken or missing, please contact the administrator.",
         )
+
+
+# Starter todos for a fresh todo list (personal deployment defaults).
+STARTER_TODOS = ("Ir al médico", "Aprender a manejar", "Tomar tereré")
+
+
+async def seed_todo_list(todo_list: DictTodoList) -> DictTodoList:
+    if todo_list.is_new:
+        for name in STARTER_TODOS:
+            await todo_list.add(name)
+        todo_list.is_new = False
+    return todo_list
+
+
+async def get_user_todo_list(user: User) -> DictTodoList:
+    habit_list = await get_user_habit_list(user)
+    return await seed_todo_list(DictTodoList(habit_list.data))
+
+
+async def get_session_todo_list(habit_list: HabitList) -> DictTodoList:
+    return await seed_todo_list(DictTodoList(habit_list.data))
 
 
 async def get_user_habit(user: User, habit_id: str) -> Habit:

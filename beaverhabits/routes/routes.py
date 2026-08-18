@@ -40,6 +40,7 @@ from beaverhabits.frontend.order_page import order_page_ui
 from beaverhabits.frontend.settings_page import settings_page
 from beaverhabits.frontend.stats_page import stats_page_ui
 from beaverhabits.frontend.streaks import heatmap_page
+from beaverhabits.frontend.todo_page import todo_page_ui
 from beaverhabits.frontend.tokens_page import tokens_page
 from beaverhabits.logger import logger
 from beaverhabits.routes.google_one_tap import google_one_tap_login
@@ -54,7 +55,8 @@ UNRESTRICTED_PAGE_ROUTES = ("/login", "/register")
 async def demo_index_page() -> None:
     days = await dummy_days(settings.INDEX_HABIT_DATE_COLUMNS)
     habit_list = views.get_or_create_session_habit_list(days)
-    index_page_ui(days, habit_list)
+    todo_list = await views.get_session_todo_list(habit_list)
+    index_page_ui(days, habit_list, todo_list)
     refresh_habit_list_when_today_changes(days, habit_list)
 
     # Google One Tap Login
@@ -66,6 +68,14 @@ async def demo_add_page() -> None:
     days = await dummy_days(settings.INDEX_HABIT_DATE_COLUMNS)
     habit_list = views.get_or_create_session_habit_list(days)
     add_page_ui(habit_list)
+
+
+@ui.page("/demo/todos")
+async def demo_todos_page() -> None:
+    days = await dummy_days(settings.INDEX_HABIT_DATE_COLUMNS)
+    habit_list = views.get_or_create_session_habit_list(days)
+    todo_list = await views.get_session_todo_list(habit_list)
+    todo_page_ui(todo_list)
 
 
 @ui.page("/demo/stats")
@@ -125,7 +135,8 @@ async def index_page(
 ) -> None:
     days = await dummy_days(settings.INDEX_HABIT_DATE_COLUMNS)
     habit_list = await views.get_user_habit_list(user)
-    index_page_ui(days, habit_list)
+    todo_list = await views.get_user_todo_list(user)
+    index_page_ui(days, habit_list, todo_list)
     refresh_habit_list_when_today_changes(days, habit_list)
 
     await views.set_user_cookies(user)
@@ -135,6 +146,12 @@ async def index_page(
 async def add_page(user: User = Depends(current_active_user)) -> None:
     habit_list = await views.get_user_habit_list(user)
     add_page_ui(habit_list)
+
+
+@ui.page("/gui/todos")
+async def todos_page(user: User = Depends(current_active_user)) -> None:
+    todo_list = await views.get_user_todo_list(user)
+    todo_page_ui(todo_list)
 
 
 @ui.page("/gui/stats")
