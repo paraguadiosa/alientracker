@@ -216,7 +216,7 @@ async def test_todo_menu_btn_opens_menu(user: User):
 
 
 async def test_todo_name_has_text_primary_class(user: User):
-    """The todo name label uses text-primary so it matches the habit hue."""
+    """The todo name label uses text-primary and the glow so it matches the habit hue."""
     todo_list = make_todo_list()
 
     @ui.page("/")
@@ -234,6 +234,32 @@ async def test_todo_name_has_text_primary_class(user: User):
     # UserInteraction.elements contains the underlying NiceGUI elements.
     name_label = next(iter(name_element.elements))
     assert "text-primary" in name_label._classes
+    assert "theme-glow-text" in name_label._classes
+
+
+async def test_done_todo_uses_dim_hue(user: User):
+    """A completed todo is dimmed with a strikethrough instead of glowing."""
+    todo_list = make_todo_list()
+
+    @ui.page("/")
+    def page():
+        todo_page_ui(todo_list)
+
+    await user.open("/")
+
+    user.find("todo-input").type("Done item")
+    user.find("todo-add").click()
+    await asyncio.sleep(0.1)
+    await user.should_see("Done item")
+
+    # Mark it done via the checkbox.
+    user.find("todo-done").click()
+    await asyncio.sleep(0.1)
+
+    name_element = user.find("todo-name")
+    name_label = next(iter(name_element.elements))
+    assert "line-through" in name_label._classes
+    assert "theme-glow-text" not in name_label._classes
 
 
 async def test_index_page_shows_habits_and_todos(user: User):
