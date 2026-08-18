@@ -23,7 +23,6 @@ from beaverhabits.app.crud import get_customer_list, get_user_count, get_user_li
 from beaverhabits.app.db import User
 from beaverhabits.configs import settings
 from beaverhabits.core.backup import backup_to_telegram
-from beaverhabits.frontend.components import redirect
 from beaverhabits.logger import logger
 from beaverhabits.storage import get_user_dict_storage, session_storage
 from beaverhabits.storage.dict import DAY_MASK, DictHabitList
@@ -274,6 +273,10 @@ async def reset_password(user: User, password: str) -> None:
     ui.notify("Password reset successfully", color="positive")
 
     await login_user(new_user)
+
+    # Lazy import: components imports views, a top-level import would be circular.
+    from beaverhabits.frontend.components import redirect
+
     redirect(GUI_ROOT_PATH)
 
 

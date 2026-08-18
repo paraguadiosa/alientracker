@@ -147,7 +147,17 @@ async def test_todo_page_interactions(user: User):
     await asyncio.sleep(0.1)
     assert todo_list.todos[0].done
 
-    # Delete it.
+    # Edit it via the name menu.
+    user.find("todo-name").click()
+    user.find("todo-edit").click()
+    await asyncio.sleep(0.1)
+    user.find("todo-edit-input").type(" con doc")
+    user.find("todo-save").click()
+    await asyncio.sleep(0.1)
+    assert todo_list.todos[0].name == "Ir al médico con doc"
+
+    # Delete it via the name menu.
+    user.find("todo-name").click()
     user.find("todo-delete").click()
     await user.should_see("List is empty.")
     assert todo_list.todos == []

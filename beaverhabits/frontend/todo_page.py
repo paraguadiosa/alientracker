@@ -2,14 +2,45 @@ from collections.abc import Callable
 
 from nicegui import ui
 
-from beaverhabits.frontend import icons
+from beaverhabits.frontend.components import (
+    PRESS_DELAY,
+    menu_icon_item,
+    separator,
+)
 from beaverhabits.frontend.layout import layout
 from beaverhabits.storage.todo import DictTodo, DictTodoList
 
 CARD_CLASSES = "pl-4 pr-2 py-0 dark:shadow-none theme-card-shadow w-full"
 
 
+def todo_edit_dialog(todo: DictTodo) -> ui.dialog:
+    async def save():
+        new_name = name_input.value.strip() if name_input.value else ""
+        if not new_name:
+            ui.notify("Todo name is required", color="negative")
+            return
+        todo.name = new_name
+        dialog.submit(True)
+
+    with ui.dialog() as dialog, ui.card().props("flat") as card:
+        dialog.props('backdrop-filter="blur(4px)"')
+        card.classes("w-5/6 max-w-96")
+
+        name_input = ui.input("Name", value=todo.name).classes("w-full")
+        name_input.mark("todo-edit-input")
+        name_input.on("keydown.enter", save)
+
+        with ui.row():
+            save_btn = ui.button("Save", on_click=save)
+            save_btn.mark("todo-save")
+            ui.button("Cancel", on_click=dialog.close)
+
+    return dialog
+
+
 def todo_row(todo_list: DictTodoList, todo: DictTodo, refresh: Callable):
+    edit_dialog = todo_edit_dialog(todo)
+
     async def toggle(e):
         todo.done = e.value
         refresh()
@@ -18,20 +49,41 @@ def todo_row(todo_list: DictTodoList, todo: DictTodo, refresh: Callable):
         await todo_list.remove(todo)
         refresh()
 
+    async def edit():
+        if await edit_dialog:
+            refresh()
+
     card = ui.card().classes(CARD_CLASSES)
     with card, ui.row().classes("w-full items-center no-wrap"):
-        name = ui.label(todo.name).classes("truncate")
+        # Name with context menu, same interaction as habit names.
+        with (
+            ui.label(todo.name).classes("truncate cursor-pointer") as name,
+            ui.menu() as menu,
+        ):
+            menu.props("auto-close no-parent-event transition-duration=0")
+            menu_icon_item("Edit", edit).mark("todo-edit")
+            separator()
+            menu_icon_item("Delete", remove).mark("todo-delete")
+
         name.props(f'role="heading" aria-level="2" aria-label="{todo.name}"')
         if todo.done:
             name.classes("line-through").style("color: #1f8a4c")
+        name.props(f'data-long-press-delay="{PRESS_DELAY}"')
+        name.on("click", menu.open)
+        name.on("long-press.prevent", menu.open)
+        name.on("contextmenu", menu.open)
+        name.mark("todo-name")
+
         ui.space()
-        checkbox = ui.checkbox(value=todo.done, on_change=toggle)
+
+        # Same icons and colors as the habit tracker checkboxes.
+        checkbox = ui.checkbox("", value=todo.done, on_change=toggle)
+        checkbox.props(
+            'checked-icon="sym_o_check" unchecked-icon="sym_o_close" keep-color'
+        )
+        checkbox.classes("theme-icon-checkbox")
         checkbox.props(f'aria-label="Mark {todo.name} as done"')
         checkbox.mark("todo-done")
-        delete = ui.button(icon=icons.DELETE, on_click=remove)
-        delete.props("flat fab-mini color=grey-9")
-        delete.props(f'aria-label="Delete {todo.name}"')
-        delete.mark("todo-delete")
 
 
 def todo_section(todo_list: DictTodoList):
