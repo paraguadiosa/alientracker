@@ -2,6 +2,14 @@
 
 A self-hosted habit tracking app, alien-themed.
 
+## Features
+
+- Daily habit tracking with a green martian terminal theme.
+- Todo list (`/gui/todos`): one-off tasks next to the daily habits.
+  On first use it is seeded with starter todos: "Ir al médico",
+  "Aprender a manejar", "Tomar tereré".
+  Todos live in the `todos` key of the existing user data store.
+
 ## Origin
 
 Alientracker is an independent project derived from
