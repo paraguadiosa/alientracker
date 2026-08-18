@@ -142,13 +142,13 @@ async def test_todo_page_interactions(user: User):
     await user.should_see("Ir al médico")
     assert [t.name for t in todo_list.todos] == ["Ir al médico"]
 
-    # Toggle it done.
+    # Toggle it done via the checkbox.
     user.find("todo-done").click()
     await asyncio.sleep(0.1)
     assert todo_list.todos[0].done
 
-    # Edit it via the name menu.
-    user.find("todo-name").click()
+    # Edit it via the menu button.
+    user.find("todo-menu-btn").click()
     user.find("todo-edit").click()
     await asyncio.sleep(0.1)
     user.find("todo-edit-input").type(" con doc")
@@ -156,11 +156,84 @@ async def test_todo_page_interactions(user: User):
     await asyncio.sleep(0.1)
     assert todo_list.todos[0].name == "Ir al médico con doc"
 
-    # Delete it via the name menu.
-    user.find("todo-name").click()
+    # Delete it via the menu button.
+    user.find("todo-menu-btn").click()
     user.find("todo-delete").click()
     await user.should_see("List is empty.")
     assert todo_list.todos == []
+
+
+async def test_todo_name_click_toggles_done(user: User):
+    """Clicking the todo name toggles done; clicking again toggles back."""
+    todo_list = make_todo_list()
+
+    @ui.page("/")
+    def page():
+        todo_page_ui(todo_list)
+
+    await user.open("/")
+
+    user.find("todo-input").type("Buy milk")
+    user.find("todo-add").click()
+    await asyncio.sleep(0.1)
+    await user.should_see("Buy milk")
+    assert not todo_list.todos[0].done
+
+    # First click toggles to done.
+    user.find("todo-name").click()
+    await asyncio.sleep(0.1)
+    assert todo_list.todos[0].done
+
+    # Second click toggles back to not done.
+    user.find("todo-name").click()
+    await asyncio.sleep(0.1)
+    assert not todo_list.todos[0].done
+
+
+async def test_todo_menu_btn_opens_menu(user: User):
+    """The menu button exists and clicking it reveals edit/delete items."""
+    todo_list = make_todo_list()
+
+    @ui.page("/")
+    def page():
+        todo_page_ui(todo_list)
+
+    await user.open("/")
+
+    user.find("todo-input").type("Task")
+    user.find("todo-add").click()
+    await asyncio.sleep(0.1)
+    await user.should_see("Task")
+
+    # The menu button is present.
+    menu_btn = user.find("todo-menu-btn")
+
+    # Clicking it reveals the edit and delete menu items.
+    menu_btn.click()
+    await asyncio.sleep(0.1)
+    await user.should_see("Edit")
+    await user.should_see("Delete")
+
+
+async def test_todo_name_has_text_primary_class(user: User):
+    """The todo name label uses text-primary so it matches the habit hue."""
+    todo_list = make_todo_list()
+
+    @ui.page("/")
+    def page():
+        todo_page_ui(todo_list)
+
+    await user.open("/")
+
+    user.find("todo-input").type("Hue check")
+    user.find("todo-add").click()
+    await asyncio.sleep(0.1)
+    await user.should_see("Hue check")
+
+    name_element = user.find("todo-name")
+    # UserInteraction.elements contains the underlying NiceGUI elements.
+    name_label = next(iter(name_element.elements))
+    assert "text-primary" in name_label._classes
 
 
 async def test_index_page_shows_habits_and_todos(user: User):

@@ -45,6 +45,10 @@ def todo_row(todo_list: DictTodoList, todo: DictTodo, refresh: Callable):
         todo.done = e.value
         refresh()
 
+    async def toggle_by_click():
+        todo.done = not todo.done
+        refresh()
+
     async def remove():
         await todo_list.remove(todo)
         refresh()
@@ -55,24 +59,32 @@ def todo_row(todo_list: DictTodoList, todo: DictTodo, refresh: Callable):
 
     card = ui.card().classes(CARD_CLASSES)
     with card, ui.row().classes("w-full items-center no-wrap"):
-        # Name with context menu, same interaction as habit names.
-        with (
-            ui.label(todo.name).classes("truncate cursor-pointer") as name,
-            ui.menu() as menu,
-        ):
-            menu.props("auto-close no-parent-event transition-duration=0")
-            menu_icon_item("Edit", edit).mark("todo-edit")
-            separator()
-            menu_icon_item("Delete", remove).mark("todo-delete")
-
+        # Clicking the name toggles done (tracker-style).
+        name = ui.label(todo.name).classes("truncate cursor-pointer text-primary")
         name.props(f'role="heading" aria-level="2" aria-label="{todo.name}"')
         if todo.done:
             name.classes("line-through").style("color: #1f8a4c")
         name.props(f'data-long-press-delay="{PRESS_DELAY}"')
-        name.on("click", menu.open)
+        name.on("click", toggle_by_click)
+        name.mark("todo-name")
+
+        # Menu button: the QMenu is nested inside so Quasar anchors it
+        # to the button and the popup renders on top of it.
+        menu_btn = ui.button(icon="more_vert")
+        menu_btn.props('flat unelevated dense')
+        menu_btn.props('aria-label="Todo actions"')
+        menu_btn.mark("todo-menu-btn")
+        with menu_btn:
+            with ui.menu() as menu:
+                menu.props("auto-close transition-duration=0")
+                menu_icon_item("Edit", edit).mark("todo-edit")
+                separator()
+                menu_icon_item("Delete", remove).mark("todo-delete")
+
+        # Long-press and contextmenu on the name still open the menu
+        # (anchored to the button, not the row).
         name.on("long-press.prevent", menu.open)
         name.on("contextmenu", menu.open)
-        name.mark("todo-name")
 
         ui.space()
 

@@ -171,7 +171,7 @@ def index_page_ui(
         if todo_list is not None:
             with columns, ui.column().classes("w-full lg:w-[340px] shrink-0 gap-1.5") as todos_col:
                 todos_col.mark("todos-column")
-                todos_title = ui.label("Todos").classes("text-lg")
+                todos_title = ui.label("Todos").classes("text-lg text-primary")
                 todos_title.props('role="heading" aria-level="2"')
                 todo_section(todo_list)
 
