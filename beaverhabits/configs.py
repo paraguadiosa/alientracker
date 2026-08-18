@@ -74,6 +74,9 @@ class Settings(BaseSettings):
     # When not set, timezone is detected from the user's browser.
     TIME_ZONE: str = ""
 
+    # External task manager URL; empty hides the link.
+    TASKS_URL: str = ""
+
     # Customization
     FIRST_DAY_OF_WEEK: int = calendar.MONDAY
     # Set to 0-6 to align today to specific day of week, e.g., 0 for Monday

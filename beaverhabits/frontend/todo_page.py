@@ -2,6 +2,7 @@ from collections.abc import Callable
 
 from nicegui import ui
 
+from beaverhabits.configs import settings
 from beaverhabits.frontend.components import (
     PRESS_DELAY,
     menu_icon_item,
@@ -104,6 +105,13 @@ def todo_row(todo_list: DictTodoList, todo: DictTodo, refresh: Callable):
 
 def todo_section(todo_list: DictTodoList):
     """Todo list plus add form, without page layout. Embeddable in any page."""
+
+    # External Tasks link (shown only when TASKS_URL is configured).
+    if settings.TASKS_URL:
+        link = ui.link("Open Tasks", target=settings.TASKS_URL, new_tab=True)
+        link.props('icon=open_in_new aria-label="Open external Tasks app"')
+        link.classes("text-sm")
+        link.mark("tasks-link")
 
     # The refreshable is defined per page build, so a refresh only re-renders
     # the current client and never touches other connected clients.

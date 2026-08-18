@@ -262,6 +262,47 @@ async def test_done_todo_uses_dim_hue(user: User):
     assert "theme-glow-text" not in name_label._classes
 
 
+async def test_tasks_link_shown_when_url_set(user: User):
+    """When TASKS_URL is set, todo_section renders a tasks-link element."""
+    from beaverhabits.configs import settings
+
+    original = settings.TASKS_URL
+    settings.TASKS_URL = "https://tasks.example.com"
+    try:
+        todo_list = make_todo_list()
+
+        @ui.page("/")
+        def page():
+            todo_page_ui(todo_list)
+
+        await user.open("/")
+        link_element = user.find("tasks-link")
+        link = next(iter(link_element.elements))
+        assert link._props.get("href") == "https://tasks.example.com"
+    finally:
+        settings.TASKS_URL = original
+
+
+async def test_tasks_link_hidden_when_url_empty(user: User):
+    """When TASKS_URL is empty, no tasks-link element exists."""
+    from beaverhabits.configs import settings
+
+    original = settings.TASKS_URL
+    settings.TASKS_URL = ""
+    try:
+        todo_list = make_todo_list()
+
+        @ui.page("/")
+        def page():
+            todo_page_ui(todo_list)
+
+        await user.open("/")
+        await user.should_see("List is empty.")
+        await user.should_not_see(marker="tasks-link")
+    finally:
+        settings.TASKS_URL = original
+
+
 async def test_index_page_shows_habits_and_todos(user: User):
     today = datetime.date(2024, 5, 1)
     days = [today - datetime.timedelta(days=i) for i in reversed(range(5))]
