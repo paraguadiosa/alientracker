@@ -146,9 +146,38 @@ def custom_headers():
             color: #00ff41;
         }
 
-        /* Scale the whole UI by 1.5x. */
+        /* Scale the whole UI by 1.5x on large screens only.
+           Mobile keeps zoom 1 so the layout fits the viewport. */
         body {
             zoom: 1.5;
+        }
+        @media (max-width: 640px) {
+            body {
+                zoom: 1;
+            }
+
+            /* Comfortable touch targets on phones. */
+            .q-header button,
+            .q-btn[aria-label],
+            .q-btn:has(> .q-btn__content > .q-icon) {
+                min-width: 44px !important;
+                min-height: 44px !important;
+            }
+
+            /* The date grid gets tight on small screens: keep it scrollable
+               instead of squashing the name column. */
+            .nicegui-grid {
+                min-width: 0;
+            }
+
+            .q-page .nicegui-card {
+                max-width: 100%;
+            }
+
+            .q-input input,
+            .q-field__native {
+                font-size: 16px; /* prevents iOS zoom on focus */
+            }
         }
 
         h1, h2, h3, h4, h5, h6, a {
