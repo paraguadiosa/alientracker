@@ -154,9 +154,12 @@ def index_page_ui(
         days = list(reversed(days))
 
     with layout(habit_list=habits):
-        columns = ui.row().classes("w-full items-start gap-4")
+        # Stack on mobile, side by side on large screens.
+        columns = ui.row().classes(
+            "w-full items-start gap-4 flex-col lg:flex-row"
+        )
 
-        with columns, ui.column().classes("gap-1.5"):
+        with columns, ui.column().classes("gap-1.5 w-full lg:w-auto"):
             if settings.ENABLE_TAG_FILTERS:
                 tag_filter_component(active_habits, refresh=habit_list_ui.refresh)
 
@@ -166,7 +169,8 @@ def index_page_ui(
                 habit_list_ui(days, active_habits)
 
         if todo_list is not None:
-            with columns, ui.column().classes("w-[340px] shrink-0 gap-1.5"):
+            with columns, ui.column().classes("w-full lg:w-[340px] shrink-0 gap-1.5") as todos_col:
+                todos_col.mark("todos-column")
                 todos_title = ui.label("Todos").classes("text-lg")
                 todos_title.props('role="heading" aria-level="2"')
                 todo_section(todo_list)

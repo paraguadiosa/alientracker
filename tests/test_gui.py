@@ -84,3 +84,21 @@ async def test_habit_stats_page(user) -> None:
 
     await user.open("/")
     await user.should_see("Order pizz")
+
+
+async def test_index_page_todos_column_is_responsive(user) -> None:
+    """The todos column is marked for responsive styling and renders."""
+    days = dummy_days(7)
+    habits = dummy_habit_list(days)
+    from beaverhabits.storage.todo import DictTodoList
+
+    todo_list = DictTodoList({})
+
+    @ui.page("/")
+    def page():
+        index_page_ui(days, habits, todo_list)
+
+    await user.open("/")
+    await user.should_see("Habits")
+    await user.should_see("Todos")
+    await user.should_see(marker="todos-column")
