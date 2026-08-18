@@ -377,6 +377,12 @@ def menu_component():
         add_menu()
         separator()
 
+        if "todos" in page_path():
+            menu_icon_item("Habits", lambda: redirect(""))
+        else:
+            menu_icon_item("Todos", lambda: redirect("todos"))
+        separator()
+
         with menu_icon_item("Tools", auto_close=False).classes("pr-1"):
             with ui.item_section().props("side").classes("pl-[1px]"):
                 ui.icon(icons.CHEVRON_RIGHT)
