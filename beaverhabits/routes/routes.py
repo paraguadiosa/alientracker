@@ -55,7 +55,8 @@ UNRESTRICTED_PAGE_ROUTES = ("/login", "/register")
 async def demo_index_page() -> None:
     days = await dummy_days(settings.INDEX_HABIT_DATE_COLUMNS)
     habit_list = views.get_or_create_session_habit_list(days)
-    index_page_ui(days, habit_list)
+    todo_list = await views.get_session_todo_list(habit_list)
+    index_page_ui(days, habit_list, todo_list)
     refresh_habit_list_when_today_changes(days, habit_list)
 
     # Google One Tap Login
@@ -134,7 +135,8 @@ async def index_page(
 ) -> None:
     days = await dummy_days(settings.INDEX_HABIT_DATE_COLUMNS)
     habit_list = await views.get_user_habit_list(user)
-    index_page_ui(days, habit_list)
+    todo_list = await views.get_user_todo_list(user)
+    index_page_ui(days, habit_list, todo_list)
     refresh_habit_list_when_today_changes(days, habit_list)
 
     await views.set_user_cookies(user)

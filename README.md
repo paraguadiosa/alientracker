@@ -5,7 +5,8 @@ A self-hosted habit tracking app, alien-themed.
 ## Features
 
 - Daily habit tracking with a green martian terminal theme.
-- Todo list (`/gui/todos`): one-off tasks next to the daily habits.
+- Todo list: one-off tasks shown side by side with the daily habits
+  on the main page (`/gui`), and standalone at `/gui/todos`.
   On first use it is seeded with starter todos: "Ir al médico",
   "Aprender a manejar", "Tomar tereré".
   Todos live in the `todos` key of the existing user data store.
