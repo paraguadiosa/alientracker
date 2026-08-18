@@ -86,19 +86,22 @@ async def test_habit_stats_page(user) -> None:
     await user.should_see("Order pizz")
 
 
-async def test_index_page_todos_column_is_responsive(user) -> None:
-    """The todos column is marked for responsive styling and renders."""
+async def test_index_page_has_no_todos_column(user) -> None:
+    """The index page renders habits only; no Todos column or marker remains."""
     days = dummy_days(7)
     habits = dummy_habit_list(days)
-    from beaverhabits.storage.todo import DictTodoList
-
-    todo_list = DictTodoList({})
 
     @ui.page("/")
     def page():
-        index_page_ui(days, habits, todo_list)
+        index_page_ui(days, habits)
 
     await user.open("/")
     await user.should_see("Habits")
-    await user.should_see("Todos")
-    await user.should_see(marker="todos-column")
+    await user.should_not_see("Todos")
+    # The todos-column marker must not be present.
+    try:
+        user.find("todos-column")
+        has_marker = True
+    except Exception:
+        has_marker = False
+    assert not has_marker, "todos-column marker must not exist after removal"

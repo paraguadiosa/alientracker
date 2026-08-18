@@ -341,7 +341,7 @@ def custom_headers():
             color: #040804 !important;
         }
 
-        /* Same neon look as the habit name links for todo names and headings. */
+        /* Neon glow for highlighted text and headings. */
         .theme-glow-text {
             text-shadow: 0 0 6px rgba(0, 255, 65, 0.35);
         }
@@ -414,10 +414,6 @@ def menu_component():
         add_menu()
         separator()
 
-        if "todos" in page_path():
-            menu_icon_item("Habits", lambda: redirect(""))
-        else:
-            menu_icon_item("Todos", lambda: redirect("todos"))
         separator()
 
         with menu_icon_item("Tools", auto_close=False).classes("pr-1"):
