@@ -16,7 +16,7 @@ from beaverhabits.frontend.components import (
     redirect,
     separator,
 )
-from beaverhabits.frontend.javascript import PREVENT_CONTEXT_MENU
+from beaverhabits.frontend.javascript import FIX_ZOOM_POSITIONS, PREVENT_CONTEXT_MENU
 from beaverhabits.frontend.menu import add_menu, sort_menu, stats_date_pick_menu
 from beaverhabits.plan import plan
 from beaverhabits.storage.meta import (
@@ -119,6 +119,9 @@ def custom_headers():
 
     # prevent context menu
     ui.add_body_html(f"<script>{PREVENT_CONTEXT_MENU}</script>")
+
+    # keep Quasar overlays anchored to their targets despite the CSS zoom
+    ui.add_body_html(f"<script>{FIX_ZOOM_POSITIONS}</script>")
 
     # custom css styles
     views.apply_theme_style()
@@ -336,6 +339,11 @@ def custom_headers():
         }
         .bg-primary, .bg-primary .q-btn__content, .bg-primary .q-icon {
             color: #040804 !important;
+        }
+
+        /* Same neon look as the habit name links for todo names and headings. */
+        .theme-glow-text {
+            text-shadow: 0 0 6px rgba(0, 255, 65, 0.35);
         }
 
         .q-btn.text-primary,

@@ -15,6 +15,59 @@ document.addEventListener('contextmenu', function(event) {
 });
 """
 
+FIX_ZOOM_POSITIONS = """\
+// Quasar positions fixed overlays (menus, dialogs, tooltips, notifications)
+// with viewport coordinates, but the theme sets body { zoom: 1.5 }, which
+// rescales those coordinates by the zoom factor and shifts the overlay away
+// from its anchor. Compensate by dividing the inline offsets by the zoom.
+(function () {
+  // Quasar's position engine compares anchor coordinates (already zoomed by
+  // getBoundingClientRect) against document.body.clientWidth, which CSS zoom
+  // leaves unzoomed. That mismatch flips menus that are still on screen.
+  // Report the true viewport width instead, so the engine's boundary math
+  // works in the same (zoomed) coordinate space as the anchors.
+  if (Object.getOwnPropertyDescriptor(document.body, 'clientWidth') === undefined) {
+    Object.defineProperty(document.body, 'clientWidth', {
+      configurable: true,
+      get: function () {
+        return window.innerWidth;
+      },
+    });
+  }
+
+  const corrected = new WeakMap();
+  function fixZoomPositions() {
+    const zoom = parseFloat(getComputedStyle(document.body).zoom);
+    if (!zoom || zoom === 1) return;
+    const factor = 1 / zoom;
+    const targets = document.querySelectorAll(
+      '.q-menu, .q-dialog, .q-tooltip, .q-notification'
+    );
+    targets.forEach((el) => {
+      const style = el.style;
+      let prev = corrected.get(el);
+      if (!prev) {
+        prev = {};
+        corrected.set(el, prev);
+      }
+      ['left', 'top', 'width', 'height'].forEach((prop) => {
+        const value = style[prop];
+        if (!value || prev[prop] === value) return;
+        const num = parseFloat(value);
+        if (Number.isNaN(num)) return;
+        style[prop] = num * factor + 'px';
+        prev[prop] = style[prop];
+      });
+    });
+  }
+  new MutationObserver(fixZoomPositions).observe(document.body, {
+    attributes: true,
+    subtree: true,
+    attributeFilter: ['style'],
+  });
+})();
+"""
+
 UNHOVER_CHECKBOXES = """\
 const elements = document.querySelectorAll('.q-checkbox');
 

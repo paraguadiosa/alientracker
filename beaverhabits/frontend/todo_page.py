@@ -63,7 +63,11 @@ def todo_row(todo_list: DictTodoList, todo: DictTodo, refresh: Callable):
         name = ui.label(todo.name).classes("truncate cursor-pointer text-primary")
         name.props(f'role="heading" aria-level="2" aria-label="{todo.name}"')
         if todo.done:
-            name.classes("line-through").style("color: #1f8a4c")
+            # Dim green strikethrough; inline !important wins over .text-primary.
+            name.classes("line-through").style("color: #1f8a4c !important")
+        else:
+            # Same neon glow as the habit name links.
+            name.classes("theme-glow-text")
         name.props(f'data-long-press-delay="{PRESS_DELAY}"')
         name.on("click", toggle_by_click)
         name.mark("todo-name")
