@@ -127,16 +127,55 @@ def custom_headers():
     # custom css styles
     views.apply_theme_style()
 
-    # Green martian terminal theme
+    # Solarized terminal theme (light and dark).
     ui.add_head_html(
         """
         <style>
-        /* Green martian terminal theme */
+        /* Solarized theme; variables flip between light and dark modes. */
+        :root, .body--dark {
+            --bh-bg: #002b36;
+            --bh-bg2: #073642;
+            --bh-card: #073642;
+            --bh-border: #073642;
+            --bh-fg: #839496;
+            --bh-fg-bright: #93a1a1;
+            --bh-dim: #586e75;
+            --bh-accent: #859900;
+            --bh-accent-bright: #b58900;
+            --bh-glow: rgba(133, 153, 0, 0.35);
+            --bh-glow-strong: rgba(133, 153, 0, 0.5);
+            --bh-shadow: rgba(0, 43, 54, 0.6);
+            --bh-input: #073642;
+            --bh-scan: rgba(133, 153, 0, 0.05);
+            --bh-red: #dc322f;
+            --bh-red-dim: #a0281f;
+            --bh-red-glow: rgba(220, 50, 47, 0.35);
+        }
+        .body--light {
+            --bh-bg: #fdf6e3;
+            --bh-bg2: #eee8d5;
+            --bh-card: #fdf6e3;
+            --bh-border: #93a1a1;
+            --bh-fg: #657b83;
+            --bh-fg-bright: #586e75;
+            --bh-dim: #93a1a1;
+            --bh-accent: #859900;
+            --bh-accent-bright: #b58900;
+            --bh-glow: rgba(133, 153, 0, 0.25);
+            --bh-glow-strong: rgba(133, 153, 0, 0.4);
+            --bh-shadow: rgba(101, 123, 131, 0.25);
+            --bh-input: #fdf6e3;
+            --bh-scan: rgba(101, 123, 131, 0.04);
+            --bh-red: #dc322f;
+            --bh-red-dim: #b3322a;
+            --bh-red-glow: rgba(220, 50, 47, 0.3);
+        }
+
         /* !important: NiceGUI sets brand colors as inline styles on body. */
         :root, body {
-            --q-primary: #00ff66 !important;
-            --q-secondary: #1f8a4c !important;
-            --q-accent: #00ff41 !important;
+            --q-primary: var(--bh-accent) !important;
+            --q-secondary: var(--bh-dim) !important;
+            --q-accent: var(--bh-accent-bright) !important;
         }
 
         body, h1, h2, h3, h4, h5, h6,
@@ -146,8 +185,8 @@ def custom_headers():
         }
 
         body, body.body--dark, .q-layout, .q-page-container, .q-page {
-            background-color: #040804 !important;
-            color: #00ff41;
+            background-color: var(--bh-bg) !important;
+            color: var(--bh-fg);
         }
 
         /* Scale the whole UI by 1.5x on large screens only.
@@ -185,90 +224,90 @@ def custom_headers():
         }
 
         h1, h2, h3, h4, h5, h6, a {
-            color: #00ff41 !important;
-            text-shadow: 0 0 6px rgba(0, 255, 65, 0.35);
+            color: var(--bh-fg-bright) !important;
+            text-shadow: 0 0 6px var(--bh-glow);
         }
 
         .text-grey, .text-muted, .q-item__label--caption {
-            color: #1f8a4c !important;
+            color: var(--bh-dim) !important;
         }
 
         .q-card {
-            background-color: #0a100a !important;
-            border: 1px solid #123f1f !important;
-            box-shadow: 0 0 12px rgba(0, 255, 65, 0.06) !important;
-            color: #00ff41;
+            background-color: var(--bh-card) !important;
+            border: 1px solid var(--bh-border) !important;
+            box-shadow: 0 0 12px var(--bh-shadow) !important;
+            color: var(--bh-fg);
         }
 
         .q-checkbox .q-checkbox__label,
         .q-checkbox {
-            color: #1f8a4c;
+            color: var(--bh-dim);
         }
         .q-checkbox.q-checkbox--active,
         .q-checkbox.q-checkbox--active .q-checkbox__label,
         .q-checkbox.q-checkbox--active .q-checkbox__inner {
-            color: #00ff66 !important;
-            text-shadow: 0 0 6px rgba(0, 255, 102, 0.5);
-            filter: drop-shadow(0 0 3px rgba(0, 255, 102, 0.4));
+            color: var(--bh-accent) !important;
+            text-shadow: 0 0 6px var(--bh-glow-strong);
+            filter: drop-shadow(0 0 3px var(--bh-glow-strong));
         }
 
         .q-btn {
-            background-color: #0a140a !important;
-            border: 1px solid #123f1f !important;
-            color: #00ff41 !important;
+            background-color: var(--bh-bg2) !important;
+            border: 1px solid var(--bh-border) !important;
+            color: var(--bh-fg-bright) !important;
             box-shadow: none !important;
         }
         .q-btn:hover {
-            border-color: #00ff66 !important;
-            box-shadow: 0 0 8px rgba(0, 255, 102, 0.25) !important;
+            border-color: var(--bh-accent) !important;
+            box-shadow: 0 0 8px var(--bh-glow) !important;
         }
         .q-btn.bg-primary, .q-btn--primary, .q-btn.text-primary {
-            background-color: #0a140a !important;
-            border-color: #00ff66 !important;
-            color: #00ff66 !important;
+            background-color: var(--bh-bg2) !important;
+            border-color: var(--bh-accent) !important;
+            color: var(--bh-accent) !important;
         }
 
         .q-header {
-            background-color: #030603 !important;
-            border-bottom: 1px solid #123f1f !important;
+            background-color: var(--bh-bg2) !important;
+            border-bottom: 1px solid var(--bh-border) !important;
         }
 
         .q-dialog .q-card, .q-menu {
-            background-color: #0a100a !important;
-            border: 1px solid #123f1f !important;
-            color: #00ff41;
+            background-color: var(--bh-bg2) !important;
+            border: 1px solid var(--bh-border) !important;
+            color: var(--bh-fg);
         }
         .q-item {
             background-color: transparent;
-            color: #00ff41;
+            color: var(--bh-fg);
         }
         .q-item:hover, .q-item.q-item--active {
-            background-color: #0d1a0d !important;
+            background-color: var(--bh-card) !important;
         }
 
         .q-input .q-field__control,
         .q-select .q-field__control,
         .q-textarea .q-field__control,
         .q-field .q-field__control {
-            background-color: #060a06 !important;
-            border: 1px solid #123f1f !important;
-            color: #00ff41 !important;
+            background-color: var(--bh-input) !important;
+            border: 1px solid var(--bh-border) !important;
+            color: var(--bh-fg) !important;
         }
         .q-field__native, .q-field__input, .q-field__label {
-            color: #00ff41 !important;
-            caret-color: #00ff41;
+            color: var(--bh-fg) !important;
+            caret-color: var(--bh-accent);
         }
         .q-field__label {
-            color: #1f8a4c !important;
+            color: var(--bh-dim) !important;
         }
 
         .q-toggle.q-toggle--active .q-toggle__inner,
         .q-toggle.q-toggle--active .q-toggle__track,
         .q-toggle.q-toggle--active .q-toggle__thumb {
-            color: #00ff66 !important;
+            color: var(--bh-accent) !important;
         }
         .q-toggle.q-toggle--active .q-toggle__track {
-            background-color: #123f1f !important;
+            background-color: var(--bh-border) !important;
         }
 
         ::-webkit-scrollbar {
@@ -276,21 +315,21 @@ def custom_headers():
             height: 8px;
         }
         ::-webkit-scrollbar-track {
-            background: #040804;
+            background: var(--bh-bg);
         }
         ::-webkit-scrollbar-thumb {
-            background: #123f1f;
+            background: var(--bh-border);
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: #1f8a4c;
+            background: var(--bh-dim);
         }
         html {
-            scrollbar-color: #123f1f #040804;
+            scrollbar-color: var(--bh-border) var(--bh-bg);
         }
 
         ::selection {
-            background: #00ff41;
-            color: #040804;
+            background: var(--bh-accent);
+            color: var(--bh-bg);
         }
 
         /* Scanlines overlay; pointer-events none so it never blocks clicks. */
@@ -305,8 +344,8 @@ def custom_headers():
             z-index: 99999;
             background: repeating-linear-gradient(
                 to bottom,
-                rgba(0, 255, 65, 0.03) 0px,
-                rgba(0, 255, 65, 0.03) 1px,
+                var(--bh-scan) 0px,
+                var(--bh-scan) 1px,
                 transparent 1px,
                 transparent 3px
             );
@@ -314,70 +353,70 @@ def custom_headers():
 
         /* Fixes for components still using the app primary rgb(88, 152, 212). */
         .q-checkbox__inner:before {
-            border-color: #1f8a4c !important;
-            color: #1f8a4c !important;
+            border-color: var(--bh-dim) !important;
+            color: var(--bh-dim) !important;
         }
         .q-checkbox__inner:hover:before {
-            border-color: #00ff66 !important;
+            border-color: var(--bh-accent) !important;
         }
         .q-checkbox[aria-checked="true"] .q-checkbox__inner:before,
         .q-checkbox--active .q-checkbox__inner:before {
-            border-color: #00ff66 !important;
-            color: #00ff66 !important;
-            box-shadow: 0 0 6px rgba(0, 255, 102, 0.4);
+            border-color: var(--bh-accent) !important;
+            color: var(--bh-accent) !important;
+            box-shadow: 0 0 6px var(--bh-glow-strong);
         }
         .q-checkbox__inner svg,
         .q-checkbox__inner svg path {
-            fill: #00ff66 !important;
-            stroke: #00ff66 !important;
+            fill: var(--bh-accent) !important;
+            stroke: var(--bh-accent) !important;
         }
 
         .text-primary {
-            color: #00ff66 !important;
+            color: var(--bh-accent) !important;
         }
         .bg-primary {
-            background-color: #00ff66 !important;
+            background-color: var(--bh-accent) !important;
         }
         .bg-primary, .bg-primary .q-btn__content, .bg-primary .q-icon {
-            color: #040804 !important;
+            color: var(--bh-bg) !important;
         }
 
         /* Same neon look as the habit name links for todo names and headings. */
         .theme-glow-text {
-            text-shadow: 0 0 6px rgba(0, 255, 65, 0.35);
+            text-shadow: 0 0 6px var(--bh-glow);
         }
 
         .q-btn.text-primary,
         .q-btn .q-icon,
         .q-btn__content {
-            color: #00ff41 !important;
+            color: var(--bh-fg-bright) !important;
         }
 
         .q-toggle .q-toggle__inner {
-            color: #1f8a4c !important;
+            color: var(--bh-dim) !important;
         }
         .q-toggle[aria-checked="true"] .q-toggle__inner,
         .q-toggle.q-toggle--active .q-toggle__inner {
-            color: #00ff66 !important;
+            color: var(--bh-accent) !important;
         }
         .q-toggle[aria-checked="true"] .q-toggle__track,
         .q-toggle.q-toggle--active .q-toggle__track {
-            background-color: #123f1f !important;
+            background-color: var(--bh-border) !important;
         }
 
         a, .q-item.q-item--active, .q-item.q-router-link--active {
-            color: #00ff66 !important;
+            color: var(--bh-accent) !important;
         }
 
         .q-pagination .q-btn--standard,
         .q-pagination .q-btn[aria-current="true"],
         .q-pagination .q-btn.text-primary {
-            color: #00ff66 !important;
-            border-color: #00ff66 !important;
+            color: var(--bh-accent) !important;
+            border-color: var(--bh-accent) !important;
         }
 
         .q-linear-progress, .q-circular-progress {
-            color: #00ff66 !important;
+            color: var(--bh-accent) !important;
         }
         </style>
         """
@@ -388,74 +427,74 @@ def custom_headers():
         """
         <style>
         .theme-unhabit-glow-text {
-            color: #ff5555 !important;
-            text-shadow: 0 0 6px rgba(255, 85, 85, 0.35);
+            color: var(--bh-red) !important;
+            text-shadow: 0 0 6px var(--bh-red-glow);
         }
 
         .theme-unhabit-header-date {
-            color: #a03030;
+            color: var(--bh-red-dim);
         }
 
         .theme-unhabit-card-shadow {
-            border: 1px solid #3f1212 !important;
-            box-shadow: 0 0 12px rgba(255, 85, 85, 0.06) !important;
+            border: 1px solid var(--bh-red-dim) !important;
+            box-shadow: 0 0 12px var(--bh-red-glow) !important;
         }
 
         .theme-unhabit-checkbox .q-checkbox__inner:before {
-            border-color: #a03030 !important;
-            color: #a03030 !important;
+            border-color: var(--bh-red-dim) !important;
+            color: var(--bh-red-dim) !important;
         }
         .theme-unhabit-checkbox .q-checkbox__inner:hover:before {
-            border-color: #ff5555 !important;
+            border-color: var(--bh-red) !important;
         }
         .theme-unhabit-checkbox[aria-checked="true"] .q-checkbox__inner:before,
         .theme-unhabit-checkbox.q-checkbox--active .q-checkbox__inner:before {
-            border-color: #ff5555 !important;
-            color: #ff5555 !important;
-            box-shadow: 0 0 6px rgba(255, 85, 85, 0.4);
+            border-color: var(--bh-red) !important;
+            color: var(--bh-red) !important;
+            box-shadow: 0 0 6px var(--bh-red-glow);
         }
         .theme-unhabit-checkbox .q-checkbox__inner svg,
         .theme-unhabit-checkbox .q-checkbox__inner svg path {
-            fill: #ff5555 !important;
-            stroke: #ff5555 !important;
+            fill: var(--bh-red) !important;
+            stroke: var(--bh-red) !important;
         }
 
         .theme-unhabit-menu-btn,
         .theme-unhabit-menu-btn .q-icon {
-            color: #ff5555 !important;
+            color: var(--bh-red) !important;
         }
 
         .theme-unhabit-menu {
-            background-color: #120808 !important;
-            border: 1px solid #3f1212 !important;
+            background-color: var(--bh-bg2) !important;
+            border: 1px solid var(--bh-red-dim) !important;
         }
         .theme-unhabit-menu .q-item {
-            color: #ff5555 !important;
+            color: var(--bh-red) !important;
         }
         .theme-unhabit-menu .q-item:hover,
         .theme-unhabit-menu .q-item.q-item--active {
-            background-color: #1d0a0a !important;
+            background-color: var(--bh-card) !important;
         }
         .theme-unhabit-menu .q-separator {
-            background-color: #3f1212 !important;
+            background-color: var(--bh-red-dim) !important;
         }
 
         .theme-unhabit-input .q-field__control {
-            background-color: #120808 !important;
-            border: 1px solid #3f1212 !important;
+            background-color: var(--bh-bg2) !important;
+            border: 1px solid var(--bh-red-dim) !important;
         }
         .theme-unhabit-input .q-field__native {
-            color: #ff5555 !important;
-            caret-color: #ff5555;
+            color: var(--bh-red) !important;
+            caret-color: var(--bh-red);
         }
         .theme-unhabit-btn {
-            background-color: #120808 !important;
-            border: 1px solid #3f1212 !important;
-            color: #ff5555 !important;
+            background-color: var(--bh-bg2) !important;
+            border: 1px solid var(--bh-red-dim) !important;
+            color: var(--bh-red) !important;
         }
         .theme-unhabit-btn:hover {
-            border-color: #ff5555 !important;
-            box-shadow: 0 0 8px rgba(255, 85, 85, 0.25) !important;
+            border-color: var(--bh-red) !important;
+            box-shadow: 0 0 8px var(--bh-red-glow) !important;
         }
         </style>
         """
