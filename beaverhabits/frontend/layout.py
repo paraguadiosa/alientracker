@@ -519,9 +519,21 @@ def custom_headers():
             background-color: transparent !important;
             border: 1px solid #3f1212 !important;
         }
-        .theme-unhabit-input .q-field__native {
+        .theme-unhabit-input .q-field__control:before,
+        .theme-unhabit-input .q-field__control:after {
+            border-color: #3f1212 !important;
+        }
+        .theme-unhabit-input .q-field__control:after {
+            border-color: #ff5555 !important;
+        }
+        .theme-unhabit-input .q-field__native,
+        .theme-unhabit-input .q-field__input {
             color: #ff5555 !important;
             caret-color: #ff5555;
+        }
+        .theme-unhabit-input .q-field__native::placeholder,
+        .theme-unhabit-input .q-field__input::placeholder {
+            color: #a03030 !important;
         }
 
         /* Subtle section Add buttons: text only, no box. */
