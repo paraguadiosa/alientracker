@@ -98,6 +98,7 @@ def unhabit_row(
         with menu_btn:
             with ui.menu() as menu:
                 menu.props("auto-close transition-duration=0")
+                menu.classes("theme-unhabit-menu")
                 menu_icon_item("Edit", edit).mark("unhabit-edit")
                 separator()
                 menu_icon_item("Delete", remove).mark("unhabit-delete")
@@ -157,10 +158,12 @@ def unhabit_section(unhabit_list: DictUnhabitList, days: list[datetime.date]):
 
     with ui.row().classes("w-full items-center no-wrap"):
         name_input = ui.input(placeholder="New unhabit...").classes("grow")
+        name_input.classes("theme-unhabit-input")
         name_input.on("keydown.enter", add)
         name_input.mark("unhabit-input")
         add_btn = ui.button("Add", on_click=add)
         add_btn.props('aria-label="Add unhabit"')
+        add_btn.classes("theme-unhabit-btn")
         add_btn.mark("unhabit-add")
 
 

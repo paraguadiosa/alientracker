@@ -171,7 +171,8 @@ def index_page_ui(
             else:
                 habit_list_ui(days, active_habits)
 
-            if unhabit_list is not None:
+        if unhabit_list is not None:
+            with columns, ui.column().classes("gap-1.5 w-full lg:w-auto"):
                 unhabit_section(unhabit_list, days)
 
         if todo_list is not None:

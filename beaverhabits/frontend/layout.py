@@ -26,6 +26,7 @@ from beaverhabits.storage.meta import (
     page_title,
 )
 from beaverhabits.storage.storage import Habit, HabitList
+from beaverhabits.utils import get_user_dark_mode, set_user_dark_mode
 from beaverhabits.version import IDENTITY
 
 
@@ -423,6 +424,39 @@ def custom_headers():
         .theme-unhabit-menu-btn .q-icon {
             color: #ff5555 !important;
         }
+
+        .theme-unhabit-menu {
+            background-color: #120808 !important;
+            border: 1px solid #3f1212 !important;
+        }
+        .theme-unhabit-menu .q-item {
+            color: #ff5555 !important;
+        }
+        .theme-unhabit-menu .q-item:hover,
+        .theme-unhabit-menu .q-item.q-item--active {
+            background-color: #1d0a0a !important;
+        }
+        .theme-unhabit-menu .q-separator {
+            background-color: #3f1212 !important;
+        }
+
+        .theme-unhabit-input .q-field__control {
+            background-color: #120808 !important;
+            border: 1px solid #3f1212 !important;
+        }
+        .theme-unhabit-input .q-field__native {
+            color: #ff5555 !important;
+            caret-color: #ff5555;
+        }
+        .theme-unhabit-btn {
+            background-color: #120808 !important;
+            border: 1px solid #3f1212 !important;
+            color: #ff5555 !important;
+        }
+        .theme-unhabit-btn:hover {
+            border-color: #ff5555 !important;
+            box-shadow: 0 0 8px rgba(255, 85, 85, 0.25) !important;
+        }
         </style>
         """
     )
@@ -510,6 +544,41 @@ def menu_component():
         menu_icon_item("Logout", lambda: user_logout() and ui.navigate.to("/login"))
 
 
+@ui.refreshable
+def dark_mode_button() -> None:
+    """Always-visible dark/light toggle shown in the page header."""
+
+    def toggle() -> None:
+        try:
+            current = get_user_dark_mode()
+        except Exception:
+            current = None
+        if current is None:
+            current = ui.dark_mode().value
+        new_value = not current
+        try:
+            set_user_dark_mode(new_value)
+        except ValueError:
+            pass
+        if new_value:
+            ui.dark_mode().enable()
+        else:
+            ui.dark_mode().disable()
+        dark_mode_button.refresh()
+
+    try:
+        dark = get_user_dark_mode()
+    except Exception:
+        dark = None
+    if dark is None:
+        dark = ui.dark_mode().value
+    menu_icon_button(
+        "sym_o_light_mode" if dark else "sym_o_dark_mode",
+        click=toggle,
+        tooltip="Toggle dark / light mode",
+    )
+
+
 @contextmanager
 def layout(
     title: str | None = None,
@@ -540,6 +609,8 @@ def layout(
             elif "stats" in page_path() and page_ui:
                 with menu_icon_button("sym_o_expand_content", tooltip="Date"):
                     stats_date_pick_menu()
+
+            dark_mode_button()
 
             with menu_icon_button("sym_o_menu"):
                 menu_component()
