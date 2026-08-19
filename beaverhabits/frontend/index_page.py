@@ -38,7 +38,7 @@ LEFT_CLASSES, RIGHT_CLASSES = (
     # grid 2 2 2 2 2
     f"col-span-{DATE_COLS} px-1 place-self-center",
 )
-COMPAT_CLASSES = "pl-4 pr-0 py-0 dark:shadow-none"
+COMPAT_CLASSES = "pl-4 pr-2 py-0 dark:shadow-none"
 
 # Sticky date row for long habit list
 STICKY_STYLES = "position: sticky; top: 0; z-index: 1;"
