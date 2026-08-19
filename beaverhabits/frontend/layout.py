@@ -427,6 +427,19 @@ def custom_headers():
         """
     )
 
+    # Subtle 3-dot action buttons: no box, just the icon.
+    ui.add_head_html(
+        """
+        <style>
+        .q-btn[aria-label$="actions"] {
+            background-color: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+        }
+        </style>
+        """
+    )
+
 
 def show_help_dialog():
     with ui.context.client.content:
