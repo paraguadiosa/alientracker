@@ -24,6 +24,24 @@ async def lifespan(_: FastAPI):
             "ADMIN_EMAIL must be set when REQUIRE_ADMIN_FOR_REGISTRATION is enabled"
         )
 
+    # Refuse to boot in non-dev environments that still use insecure defaults.
+    # The defaults are part of the public source tree, so any deployment that
+    # does not override them lets an attacker forge JWTs and sessions.
+    if not settings.is_dev():
+        insecure = []
+        if settings.JWT_SECRET == "SECRET":
+            insecure.append("JWT_SECRET")
+        if settings.NICEGUI_STORAGE_SECRET == "dev":
+            insecure.append("NICEGUI_STORAGE_SECRET")
+        if settings.RESET_PASSWORD_TOKEN_SECRET == "":
+            insecure.append("RESET_PASSWORD_TOKEN_SECRET")
+        if insecure:
+            raise RuntimeError(
+                "Refusing to start: insecure default secret(s) in use for "
+                + ", ".join(insecure)
+                + ". Set strong random values before running in production."
+            )
+
     # Enable warning msg
     if settings.DEBUG:
         logger.info("Debug mode enabled")
