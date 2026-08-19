@@ -300,6 +300,23 @@ body::after {
     color: var(--th-text) !important;
 }
 
+/* Todo triple-dot: faint like the card frame, not a bright button */
+.q-btn.todo-menu-faint {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+.q-btn.todo-menu-faint .q-icon {
+    color: var(--th-line) !important;
+}
+.q-btn.todo-menu-faint:hover {
+    border: none !important;
+    box-shadow: none !important;
+}
+.q-btn.todo-menu-faint:hover .q-icon {
+    color: var(--th-muted) !important;
+}
+
 .q-toggle .q-toggle__inner {
     color: var(--th-muted) !important;
 }
