@@ -544,6 +544,14 @@ def custom_headers():
             color: #ff5555 !important;
             text-shadow: 0 0 6px rgba(255, 85, 85, 0.35);
         }
+
+        /* Subtle 3-dot action buttons: no box, just the icon. */
+        .q-btn[aria-label$="actions"],
+        .q-btn[aria-label$="actions"]:hover {
+            background-color: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+        }
         </style>
         """
     )
