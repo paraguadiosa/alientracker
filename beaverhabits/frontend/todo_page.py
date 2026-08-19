@@ -77,6 +77,7 @@ def todo_row(todo_list: DictTodoList, todo: DictTodo, refresh: Callable):
         # to the button and the popup renders on top of it.
         menu_btn = ui.button(icon="more_vert")
         menu_btn.props('flat unelevated dense')
+        menu_btn.classes("todo-menu-faint")
         menu_btn.props('aria-label="Todo actions"')
         menu_btn.mark("todo-menu-btn")
         with menu_btn:

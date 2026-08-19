@@ -265,7 +265,7 @@ async def forgot_password(email: str) -> None:
         )
         return
 
-    logger.debug(f"Reset password token for {user.email}: {token}")
+    logger.debug(f"Reset password token requested for {user.email}")
     async with asyncio.timeout(1):
         await run.io_bound(
             send_email,
