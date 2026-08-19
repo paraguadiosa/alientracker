@@ -479,6 +479,9 @@ def custom_headers():
             border: 1px solid #3f1212 !important;
             box-shadow: 0 0 12px rgba(255, 85, 85, 0.06) !important;
         }
+        html[data-theme="light"] .theme-unhabit-card-shadow {
+            background-color: var(--th-panel, #e9efe0) !important;
+        }
         .theme-unhabit-checkbox .q-checkbox__inner:before {
             border-color: #a03030 !important;
             color: #a03030 !important;
@@ -518,6 +521,7 @@ def custom_headers():
         .theme-unhabit-input .q-field__control {
             background-color: transparent !important;
             border: 1px solid #3f1212 !important;
+            color: #ff5555 !important;
         }
         .theme-unhabit-input .q-field__control:before,
         .theme-unhabit-input .q-field__control:after {
@@ -527,9 +531,11 @@ def custom_headers():
             border-color: #ff5555 !important;
         }
         .theme-unhabit-input .q-field__native,
-        .theme-unhabit-input .q-field__input {
+        .theme-unhabit-input .q-field__input,
+        .theme-unhabit-input.q-field .q-field__native,
+        .theme-unhabit-input.q-field .q-field__input {
             color: #ff5555 !important;
-            caret-color: #ff5555;
+            caret-color: #ff5555 !important;
         }
         .theme-unhabit-input .q-field__native::placeholder,
         .theme-unhabit-input .q-field__input::placeholder {
