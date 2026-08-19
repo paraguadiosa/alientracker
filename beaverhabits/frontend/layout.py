@@ -26,6 +26,7 @@ from beaverhabits.storage.meta import (
     page_title,
 )
 from beaverhabits.storage.storage import Habit, HabitList
+from beaverhabits.utils import get_user_dark_mode, set_user_dark_mode
 from beaverhabits.version import IDENTITY
 
 THEME_CSS = """\
@@ -462,6 +463,117 @@ def custom_headers():
     ui.add_head_html(f"<style>{THEME_CSS}</style>")
     ui.add_head_html(f"<script>{THEME_INIT_JS}</script>")
 
+    # Unhabits: red "things to stop doing" section + subtle Add buttons.
+    ui.add_head_html(
+        """
+        <style>
+        .theme-unhabit-glow-text {
+            color: #ff5555 !important;
+            text-shadow: 0 0 6px rgba(255, 85, 85, 0.35);
+        }
+        .theme-unhabit-header-date {
+            color: #a03030;
+        }
+        .theme-unhabit-card-shadow {
+            background-color: transparent !important;
+            border: 1px solid #3f1212 !important;
+            box-shadow: 0 0 12px rgba(255, 85, 85, 0.06) !important;
+        }
+        html[data-theme="light"] .theme-unhabit-card-shadow {
+            background-color: var(--th-panel, #e9efe0) !important;
+        }
+        .theme-unhabit-checkbox .q-checkbox__inner:before {
+            border-color: #a03030 !important;
+            color: #a03030 !important;
+        }
+        .theme-unhabit-checkbox .q-checkbox__inner:hover:before {
+            border-color: #ff5555 !important;
+        }
+        .theme-unhabit-checkbox[aria-checked="true"] .q-checkbox__inner:before,
+        .theme-unhabit-checkbox.q-checkbox--active .q-checkbox__inner:before {
+            border-color: #ff5555 !important;
+            color: #ff5555 !important;
+            box-shadow: 0 0 6px rgba(255, 85, 85, 0.4);
+        }
+        .theme-unhabit-checkbox .q-checkbox__inner svg,
+        .theme-unhabit-checkbox .q-checkbox__inner svg path {
+            fill: #ff5555 !important;
+            stroke: #ff5555 !important;
+        }
+        .theme-unhabit-menu-btn,
+        .theme-unhabit-menu-btn .q-icon {
+            color: #ff5555 !important;
+        }
+        .theme-unhabit-menu {
+            background-color: var(--th-inset, #0a140a) !important;
+            border: 1px solid #3f1212 !important;
+        }
+        .theme-unhabit-menu .q-item {
+            color: #ff5555 !important;
+        }
+        .theme-unhabit-menu .q-item:hover,
+        .theme-unhabit-menu .q-item.q-item--active {
+            background-color: var(--th-hover, #0d1a0d) !important;
+        }
+        .theme-unhabit-menu .q-separator {
+            background-color: #3f1212 !important;
+        }
+        .theme-unhabit-input .q-field__control {
+            background-color: transparent !important;
+            border: 1px solid #3f1212 !important;
+            color: #ff5555 !important;
+        }
+        .theme-unhabit-input .q-field__control:before,
+        .theme-unhabit-input .q-field__control:after {
+            border-color: #3f1212 !important;
+        }
+        .theme-unhabit-input .q-field__control:after {
+            border-color: #ff5555 !important;
+        }
+        .theme-unhabit-input .q-field__native,
+        .theme-unhabit-input .q-field__input,
+        .theme-unhabit-input.q-field .q-field__native,
+        .theme-unhabit-input.q-field .q-field__input {
+            color: #ff5555 !important;
+            caret-color: #ff5555 !important;
+        }
+        .theme-unhabit-input .q-field__native::placeholder,
+        .theme-unhabit-input .q-field__input::placeholder {
+            color: #a03030 !important;
+        }
+
+        /* Subtle section Add buttons: text only, no box. */
+        .q-btn.theme-add-btn,
+        .q-btn.theme-unhabit-btn {
+            background-color: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+        }
+        .q-btn.theme-add-btn {
+            color: var(--th-text, #00ff41) !important;
+        }
+        .q-btn.theme-add-btn:hover {
+            color: var(--th-accent, #00ff66) !important;
+        }
+        .q-btn.theme-unhabit-btn {
+            color: #ff5555 !important;
+        }
+        .q-btn.theme-unhabit-btn:hover {
+            color: #ff5555 !important;
+            text-shadow: 0 0 6px rgba(255, 85, 85, 0.35);
+        }
+
+        /* Subtle 3-dot action buttons: no box, just the icon. */
+        .q-btn[aria-label$="actions"],
+        .q-btn[aria-label$="actions"]:hover {
+            background-color: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+        }
+        </style>
+        """
+    )
+
 
 def show_help_dialog():
     with ui.context.client.content:
@@ -494,10 +606,12 @@ def menu_component():
         add_menu()
         separator()
 
-        if "todos" in page_path():
-            menu_icon_item("Habits", lambda: redirect(""))
-        else:
+        if "unhabits" not in page_path():
+            menu_icon_item("Unhabits", lambda: redirect("unhabits"))
+        if "todos" not in page_path():
             menu_icon_item("Todos", lambda: redirect("todos"))
+        if "todos" in page_path() or "unhabits" in page_path():
+            menu_icon_item("Habits", lambda: redirect(""))
         separator()
 
         with menu_icon_item("Tools", auto_close=False).classes("pr-1"):
@@ -534,6 +648,42 @@ def menu_component():
         menu_icon_item("Logout", lambda: user_logout() and ui.navigate.to("/login"))
 
 
+@ui.refreshable
+def dark_mode_button() -> None:
+    """Always-visible dark/light toggle shown in the page header."""
+
+    def toggle() -> None:
+        ui.run_javascript(THEME_TOGGLE_JS)
+        try:
+            current = get_user_dark_mode()
+        except Exception:
+            current = None
+        if current is None:
+            current = ui.dark_mode().value
+        new_value = not current
+        try:
+            set_user_dark_mode(new_value)
+        except ValueError:
+            pass
+        if new_value:
+            ui.dark_mode().enable()
+        else:
+            ui.dark_mode().disable()
+        dark_mode_button.refresh()
+
+    try:
+        dark = get_user_dark_mode()
+    except Exception:
+        dark = None
+    if dark is None:
+        dark = ui.dark_mode().value
+    menu_icon_button(
+        "sym_o_light_mode" if dark else "sym_o_dark_mode",
+        click=toggle,
+        tooltip="Toggle dark / light mode",
+    )
+
+
 @contextmanager
 def layout(
     title: str | None = None,
@@ -564,6 +714,8 @@ def layout(
             elif "stats" in page_path() and page_ui:
                 with menu_icon_button("sym_o_expand_content", tooltip="Date"):
                     stats_date_pick_menu()
+
+            dark_mode_button()
 
             with menu_icon_button("sym_o_menu"):
                 menu_component()

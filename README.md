@@ -11,6 +11,10 @@ A self-hosted habit tracking app, alien-themed.
   "Aprender a manejar", "Tomar tereré".
   Todos live in the `todos` key of the existing user data store.
   Set `TASKS_URL` to link to an external task manager; empty hides the link.
+- Unhabit tracker: things you want to stop doing, shown in red below the
+  habits on the main page (`/gui`) and standalone at `/gui/unhabits`.
+  Checking a day means you avoided the unhabit that day.
+  Unhabits live in the `unhabits` key of the user data store.
 
 ## Origin
 

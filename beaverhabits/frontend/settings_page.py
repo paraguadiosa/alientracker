@@ -29,10 +29,10 @@ async def settings_page(user: User):
 
     with layout(title="Settings"):
         with ui.column().classes("w-[600px]"):
-            # ui.label("Darkmode").classes("text-lg font-bold")
-            # with ui.row():
-            #     ui.button("Dark", on_click=lambda: toggle_dark_mode(True))
-            #     ui.button("Light", on_click=lambda: toggle_dark_mode(False))
+            ui.label("Darkmode").classes("text-lg font-bold")
+            with ui.row():
+                ui.button("Dark", on_click=lambda: toggle_dark_mode(True))
+                ui.button("Light", on_click=lambda: toggle_dark_mode(False))
 
             ui.label("Custom CSS").classes("text-lg font-bold")
             editor = ui.codemirror(

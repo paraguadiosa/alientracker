@@ -1,4 +1,4 @@
-PAGE_TITLE = "Beaver Habit Tracker"
+PAGE_TITLE = "Alien Tracker"
 HOME_PAGE = "https://github.com/daya0576/beaverhabits"
 
 IMPORT_WIKI_PAGE = (

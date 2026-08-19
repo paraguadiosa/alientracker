@@ -41,6 +41,7 @@ from beaverhabits.frontend.settings_page import settings_page
 from beaverhabits.frontend.stats_page import stats_page_ui
 from beaverhabits.frontend.streaks import heatmap_page
 from beaverhabits.frontend.todo_page import todo_page_ui
+from beaverhabits.frontend.unhabit_page import unhabit_page_ui
 from beaverhabits.frontend.tokens_page import tokens_page
 from beaverhabits.logger import logger
 from beaverhabits.routes.google_one_tap import google_one_tap_login
@@ -56,7 +57,8 @@ async def demo_index_page() -> None:
     days = await dummy_days(settings.INDEX_HABIT_DATE_COLUMNS)
     habit_list = views.get_or_create_session_habit_list(days)
     todo_list = await views.get_session_todo_list(habit_list)
-    index_page_ui(days, habit_list, todo_list)
+    unhabit_list = await views.get_session_unhabit_list(habit_list)
+    index_page_ui(days, habit_list, todo_list, unhabit_list)
     refresh_habit_list_when_today_changes(days, habit_list)
 
     # Google One Tap Login
@@ -76,6 +78,14 @@ async def demo_todos_page() -> None:
     habit_list = views.get_or_create_session_habit_list(days)
     todo_list = await views.get_session_todo_list(habit_list)
     todo_page_ui(todo_list)
+
+
+@ui.page("/demo/unhabits")
+async def demo_unhabits_page() -> None:
+    days = await dummy_days(settings.INDEX_HABIT_DATE_COLUMNS)
+    habit_list = views.get_or_create_session_habit_list(days)
+    unhabit_list = await views.get_session_unhabit_list(habit_list)
+    unhabit_page_ui(unhabit_list, days)
 
 
 @ui.page("/demo/stats")
@@ -136,7 +146,8 @@ async def index_page(
     days = await dummy_days(settings.INDEX_HABIT_DATE_COLUMNS)
     habit_list = await views.get_user_habit_list(user)
     todo_list = await views.get_user_todo_list(user)
-    index_page_ui(days, habit_list, todo_list)
+    unhabit_list = await views.get_user_unhabit_list(user)
+    index_page_ui(days, habit_list, todo_list, unhabit_list)
     refresh_habit_list_when_today_changes(days, habit_list)
 
     await views.set_user_cookies(user)
@@ -152,6 +163,13 @@ async def add_page(user: User = Depends(current_active_user)) -> None:
 async def todos_page(user: User = Depends(current_active_user)) -> None:
     todo_list = await views.get_user_todo_list(user)
     todo_page_ui(todo_list)
+
+
+@ui.page("/gui/unhabits")
+async def unhabits_page(user: User = Depends(current_active_user)) -> None:
+    days = await dummy_days(settings.INDEX_HABIT_DATE_COLUMNS)
+    unhabit_list = await views.get_user_unhabit_list(user)
+    unhabit_page_ui(unhabit_list, days)
 
 
 @ui.page("/gui/stats")

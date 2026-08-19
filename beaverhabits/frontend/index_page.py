@@ -19,6 +19,7 @@ from beaverhabits.frontend.components import (
 )
 from beaverhabits.frontend.layout import layout
 from beaverhabits.frontend.todo_page import todo_section
+from beaverhabits.frontend.unhabit_page import unhabit_section
 from beaverhabits.storage.storage import (
     Habit,
     HabitList,
@@ -26,6 +27,7 @@ from beaverhabits.storage.storage import (
     HabitStatus,
 )
 from beaverhabits.storage.todo import DictTodoList
+from beaverhabits.storage.unhabit import DictUnhabitList
 
 NAME_COLS, DATE_COLS = settings.INDEX_HABIT_NAME_COLUMNS, 2
 COUNT_BADGE_COLS = 2 if settings.INDEX_SHOW_HABIT_COUNT else 0
@@ -36,7 +38,7 @@ LEFT_CLASSES, RIGHT_CLASSES = (
     # grid 2 2 2 2 2
     f"col-span-{DATE_COLS} px-1 place-self-center",
 )
-COMPAT_CLASSES = "pl-4 pr-0 py-0 dark:shadow-none"
+COMPAT_CLASSES = "pl-4 pr-2 py-0 dark:shadow-none"
 
 # Sticky date row for long habit list
 STICKY_STYLES = "position: sticky; top: 0; z-index: 1;"
@@ -148,6 +150,7 @@ def index_page_ui(
     days: list[datetime.date],
     habits: HabitList,
     todo_list: DictTodoList | None = None,
+    unhabit_list: DictUnhabitList | None = None,
 ):
     active_habits = get_active_habits(habits)
     if settings.INDEX_HABIT_DATE_REVERSE:
@@ -160,6 +163,11 @@ def index_page_ui(
         )
 
         with columns, ui.column().classes("gap-1.5 w-full lg:w-auto"):
+            habits_title = ui.label("Habits").classes(
+                "text-lg text-primary theme-glow-text"
+            )
+            habits_title.props('role="heading" aria-level="2"')
+
             if settings.ENABLE_TAG_FILTERS:
                 tag_filter_component(active_habits, refresh=habit_list_ui.refresh)
 
@@ -167,6 +175,26 @@ def index_page_ui(
                 ui.label("List is empty.").classes("mx-auto w-80")
             else:
                 habit_list_ui(days, active_habits)
+
+            async def add_habit():
+                name = name_input.value.strip() if name_input.value else ""
+                if not name:
+                    ui.notify("Habit name is required", color="negative")
+                    return
+                await habit_list.add(name)
+                name_input.value = ""
+                index_page_ui.refresh()
+
+            with ui.row().classes("w-full items-center no-wrap"):
+                name_input = ui.input(placeholder="New habit...").classes("grow")
+                name_input.on("keydown.enter", add_habit)
+                add_btn = ui.button("Add", on_click=add_habit)
+                add_btn.props('aria-label="Add habit"')
+                add_btn.classes("theme-add-btn")
+
+        if unhabit_list is not None:
+            with columns, ui.column().classes("gap-1.5 w-full lg:w-auto"):
+                unhabit_section(unhabit_list, days)
 
         if todo_list is not None:
             with columns, ui.column().classes("w-full lg:w-[340px] shrink-0 gap-1.5") as todos_col:
