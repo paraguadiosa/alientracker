@@ -418,6 +418,11 @@ def custom_headers():
             fill: #ff5555 !important;
             stroke: #ff5555 !important;
         }
+
+        .theme-unhabit-menu-btn,
+        .theme-unhabit-menu-btn .q-icon {
+            color: #ff5555 !important;
+        }
         </style>
         """
     )

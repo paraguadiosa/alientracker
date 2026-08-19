@@ -93,6 +93,7 @@ def unhabit_row(
         menu_btn = ui.button(icon="more_vert")
         menu_btn.props('flat unelevated dense')
         menu_btn.props('aria-label="Unhabit actions"')
+        menu_btn.classes("theme-unhabit-menu-btn")
         menu_btn.mark("unhabit-menu-btn")
         with menu_btn:
             with ui.menu() as menu:
