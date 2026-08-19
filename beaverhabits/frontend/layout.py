@@ -382,6 +382,46 @@ def custom_headers():
         """
     )
 
+    # Unhabits: red "things to stop doing" section.
+    ui.add_head_html(
+        """
+        <style>
+        .theme-unhabit-glow-text {
+            color: #ff5555 !important;
+            text-shadow: 0 0 6px rgba(255, 85, 85, 0.35);
+        }
+
+        .theme-unhabit-header-date {
+            color: #a03030;
+        }
+
+        .theme-unhabit-card-shadow {
+            border: 1px solid #3f1212 !important;
+            box-shadow: 0 0 12px rgba(255, 85, 85, 0.06) !important;
+        }
+
+        .theme-unhabit-checkbox .q-checkbox__inner:before {
+            border-color: #a03030 !important;
+            color: #a03030 !important;
+        }
+        .theme-unhabit-checkbox .q-checkbox__inner:hover:before {
+            border-color: #ff5555 !important;
+        }
+        .theme-unhabit-checkbox[aria-checked="true"] .q-checkbox__inner:before,
+        .theme-unhabit-checkbox.q-checkbox--active .q-checkbox__inner:before {
+            border-color: #ff5555 !important;
+            color: #ff5555 !important;
+            box-shadow: 0 0 6px rgba(255, 85, 85, 0.4);
+        }
+        .theme-unhabit-checkbox .q-checkbox__inner svg,
+        .theme-unhabit-checkbox .q-checkbox__inner svg path {
+            fill: #ff5555 !important;
+            stroke: #ff5555 !important;
+        }
+        </style>
+        """
+    )
+
 
 def show_help_dialog():
     with ui.context.client.content:
@@ -414,10 +454,12 @@ def menu_component():
         add_menu()
         separator()
 
-        if "todos" in page_path():
-            menu_icon_item("Habits", lambda: redirect(""))
-        else:
+        if "unhabits" not in page_path():
+            menu_icon_item("Unhabits", lambda: redirect("unhabits"))
+        if "todos" not in page_path():
             menu_icon_item("Todos", lambda: redirect("todos"))
+        if "todos" in page_path() or "unhabits" in page_path():
+            menu_icon_item("Habits", lambda: redirect(""))
         separator()
 
         with menu_icon_item("Tools", auto_close=False).classes("pr-1"):

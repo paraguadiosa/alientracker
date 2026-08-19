@@ -19,6 +19,7 @@ from beaverhabits.frontend.components import (
 )
 from beaverhabits.frontend.layout import layout
 from beaverhabits.frontend.todo_page import todo_section
+from beaverhabits.frontend.unhabit_page import unhabit_section
 from beaverhabits.storage.storage import (
     Habit,
     HabitList,
@@ -26,6 +27,7 @@ from beaverhabits.storage.storage import (
     HabitStatus,
 )
 from beaverhabits.storage.todo import DictTodoList
+from beaverhabits.storage.unhabit import DictUnhabitList
 
 NAME_COLS, DATE_COLS = settings.INDEX_HABIT_NAME_COLUMNS, 2
 COUNT_BADGE_COLS = 2 if settings.INDEX_SHOW_HABIT_COUNT else 0
@@ -148,6 +150,7 @@ def index_page_ui(
     days: list[datetime.date],
     habits: HabitList,
     todo_list: DictTodoList | None = None,
+    unhabit_list: DictUnhabitList | None = None,
 ):
     active_habits = get_active_habits(habits)
     if settings.INDEX_HABIT_DATE_REVERSE:
@@ -167,6 +170,9 @@ def index_page_ui(
                 ui.label("List is empty.").classes("mx-auto w-80")
             else:
                 habit_list_ui(days, active_habits)
+
+            if unhabit_list is not None:
+                unhabit_section(unhabit_list, days)
 
         if todo_list is not None:
             with columns, ui.column().classes("w-full lg:w-[340px] shrink-0 gap-1.5") as todos_col:

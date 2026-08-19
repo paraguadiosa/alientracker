@@ -29,6 +29,7 @@ from beaverhabits.storage.dict import DAY_MASK, DictHabitList
 from beaverhabits.storage.meta import GUI_ROOT_PATH
 from beaverhabits.storage.storage import Habit, HabitList, HabitListBuilder, HabitStatus
 from beaverhabits.storage.todo import DictTodoList
+from beaverhabits.storage.unhabit import DictUnhabitList
 from beaverhabits.utils import generate_short_hash, ratelimiter, send_email
 
 user_storage = get_user_dict_storage()
@@ -110,6 +111,15 @@ async def get_user_todo_list(user: User) -> DictTodoList:
 
 async def get_session_todo_list(habit_list: HabitList) -> DictTodoList:
     return await seed_todo_list(DictTodoList(habit_list.data))
+
+
+async def get_user_unhabit_list(user: User) -> DictUnhabitList:
+    habit_list = await get_user_habit_list(user)
+    return DictUnhabitList(habit_list.data)
+
+
+async def get_session_unhabit_list(habit_list: HabitList) -> DictUnhabitList:
+    return DictUnhabitList(habit_list.data)
 
 
 async def get_user_habit(user: User, habit_id: str) -> Habit:
