@@ -144,6 +144,7 @@ def todo_section(todo_list: DictTodoList):
         name_input.mark("todo-input")
         add_btn = ui.button("Add", on_click=add)
         add_btn.props('aria-label="Add todo"')
+        add_btn.classes("theme-add-btn")
         add_btn.mark("todo-add")
 
 

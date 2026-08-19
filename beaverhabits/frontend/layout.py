@@ -463,6 +463,90 @@ def custom_headers():
     ui.add_head_html(f"<style>{THEME_CSS}</style>")
     ui.add_head_html(f"<script>{THEME_INIT_JS}</script>")
 
+    # Unhabits: red "things to stop doing" section + subtle Add buttons.
+    ui.add_head_html(
+        """
+        <style>
+        .theme-unhabit-glow-text {
+            color: #ff5555 !important;
+            text-shadow: 0 0 6px rgba(255, 85, 85, 0.35);
+        }
+        .theme-unhabit-header-date {
+            color: #a03030;
+        }
+        .theme-unhabit-card-shadow {
+            border: 1px solid #3f1212 !important;
+            box-shadow: 0 0 12px rgba(255, 85, 85, 0.06) !important;
+        }
+        .theme-unhabit-checkbox .q-checkbox__inner:before {
+            border-color: #a03030 !important;
+            color: #a03030 !important;
+        }
+        .theme-unhabit-checkbox .q-checkbox__inner:hover:before {
+            border-color: #ff5555 !important;
+        }
+        .theme-unhabit-checkbox[aria-checked="true"] .q-checkbox__inner:before,
+        .theme-unhabit-checkbox.q-checkbox--active .q-checkbox__inner:before {
+            border-color: #ff5555 !important;
+            color: #ff5555 !important;
+            box-shadow: 0 0 6px rgba(255, 85, 85, 0.4);
+        }
+        .theme-unhabit-checkbox .q-checkbox__inner svg,
+        .theme-unhabit-checkbox .q-checkbox__inner svg path {
+            fill: #ff5555 !important;
+            stroke: #ff5555 !important;
+        }
+        .theme-unhabit-menu-btn,
+        .theme-unhabit-menu-btn .q-icon {
+            color: #ff5555 !important;
+        }
+        .theme-unhabit-menu {
+            background-color: var(--th-inset, #0a140a) !important;
+            border: 1px solid #3f1212 !important;
+        }
+        .theme-unhabit-menu .q-item {
+            color: #ff5555 !important;
+        }
+        .theme-unhabit-menu .q-item:hover,
+        .theme-unhabit-menu .q-item.q-item--active {
+            background-color: var(--th-hover, #0d1a0d) !important;
+        }
+        .theme-unhabit-menu .q-separator {
+            background-color: #3f1212 !important;
+        }
+        .theme-unhabit-input .q-field__control {
+            background-color: var(--th-control, #060a06) !important;
+            border: 1px solid #3f1212 !important;
+        }
+        .theme-unhabit-input .q-field__native {
+            color: #ff5555 !important;
+            caret-color: #ff5555;
+        }
+
+        /* Subtle section Add buttons: text only, no box. */
+        .theme-add-btn,
+        .theme-unhabit-btn {
+            background-color: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+        }
+        .theme-add-btn {
+            color: var(--th-text, #00ff41) !important;
+        }
+        .theme-add-btn:hover {
+            color: var(--th-accent, #00ff66) !important;
+        }
+        .theme-unhabit-btn {
+            color: #ff5555 !important;
+        }
+        .theme-unhabit-btn:hover {
+            color: #ff5555 !important;
+            text-shadow: 0 0 6px rgba(255, 85, 85, 0.35);
+        }
+        </style>
+        """
+    )
+
 
 def show_help_dialog():
     with ui.context.client.content:
@@ -542,6 +626,7 @@ def dark_mode_button() -> None:
     """Always-visible dark/light toggle shown in the page header."""
 
     def toggle() -> None:
+        ui.run_javascript(THEME_TOGGLE_JS)
         try:
             current = get_user_dark_mode()
         except Exception:

@@ -190,6 +190,7 @@ def index_page_ui(
                 name_input.on("keydown.enter", add_habit)
                 add_btn = ui.button("Add", on_click=add_habit)
                 add_btn.props('aria-label="Add habit"')
+                add_btn.classes("theme-add-btn")
 
         if unhabit_list is not None:
             with columns, ui.column().classes("gap-1.5 w-full lg:w-auto"):
