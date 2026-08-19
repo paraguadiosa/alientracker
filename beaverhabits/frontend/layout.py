@@ -133,23 +133,23 @@ def custom_headers():
         <style>
         /* Solarized theme; variables flip between light and dark modes. */
         :root, .body--dark {
-            --bh-bg: #002b36;
-            --bh-bg2: #073642;
-            --bh-card: #073642;
-            --bh-border: #073642;
-            --bh-fg: #839496;
-            --bh-fg-bright: #93a1a1;
-            --bh-dim: #586e75;
-            --bh-accent: #859900;
-            --bh-accent-bright: #b58900;
-            --bh-glow: rgba(133, 153, 0, 0.35);
-            --bh-glow-strong: rgba(133, 153, 0, 0.5);
-            --bh-shadow: rgba(0, 43, 54, 0.6);
-            --bh-input: #073642;
-            --bh-scan: rgba(133, 153, 0, 0.05);
-            --bh-red: #dc322f;
-            --bh-red-dim: #a0281f;
-            --bh-red-glow: rgba(220, 50, 47, 0.35);
+            --bh-bg: #040804;
+            --bh-bg2: #0a140a;
+            --bh-card: #0a100a;
+            --bh-border: #123f1f;
+            --bh-fg: #00ff41;
+            --bh-fg-bright: #00ff66;
+            --bh-dim: #1f8a4c;
+            --bh-accent: #00ff66;
+            --bh-accent-bright: #00ff41;
+            --bh-glow: rgba(0, 255, 65, 0.35);
+            --bh-glow-strong: rgba(0, 255, 102, 0.5);
+            --bh-shadow: rgba(0, 255, 65, 0.06);
+            --bh-input: #060a06;
+            --bh-scan: rgba(0, 255, 65, 0.03);
+            --bh-red: #ff5555;
+            --bh-red-dim: #a03030;
+            --bh-red-glow: rgba(255, 85, 85, 0.35);
         }
         .body--light {
             --bh-bg: #fdf6e3;
