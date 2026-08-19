@@ -475,6 +475,7 @@ def custom_headers():
             color: #a03030;
         }
         .theme-unhabit-card-shadow {
+            background-color: transparent !important;
             border: 1px solid #3f1212 !important;
             box-shadow: 0 0 12px rgba(255, 85, 85, 0.06) !important;
         }
@@ -515,7 +516,7 @@ def custom_headers():
             background-color: #3f1212 !important;
         }
         .theme-unhabit-input .q-field__control {
-            background-color: var(--th-control, #060a06) !important;
+            background-color: transparent !important;
             border: 1px solid #3f1212 !important;
         }
         .theme-unhabit-input .q-field__native {
@@ -524,22 +525,22 @@ def custom_headers():
         }
 
         /* Subtle section Add buttons: text only, no box. */
-        .theme-add-btn,
-        .theme-unhabit-btn {
+        .q-btn.theme-add-btn,
+        .q-btn.theme-unhabit-btn {
             background-color: transparent !important;
             border: none !important;
             box-shadow: none !important;
         }
-        .theme-add-btn {
+        .q-btn.theme-add-btn {
             color: var(--th-text, #00ff41) !important;
         }
-        .theme-add-btn:hover {
+        .q-btn.theme-add-btn:hover {
             color: var(--th-accent, #00ff66) !important;
         }
-        .theme-unhabit-btn {
+        .q-btn.theme-unhabit-btn {
             color: #ff5555 !important;
         }
-        .theme-unhabit-btn:hover {
+        .q-btn.theme-unhabit-btn:hover {
             color: #ff5555 !important;
             text-shadow: 0 0 6px rgba(255, 85, 85, 0.35);
         }
