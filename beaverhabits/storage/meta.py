@@ -7,7 +7,7 @@ GUI_ROOT_PATH = "/gui"
 
 
 def page_title() -> str:
-    return "Demo" if is_page_demo() else "Habits"
+    return "Demo" if is_page_demo() else "Alien Tracker"
 
 
 def page_path() -> str:

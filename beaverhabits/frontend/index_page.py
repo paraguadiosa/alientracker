@@ -163,6 +163,11 @@ def index_page_ui(
         )
 
         with columns, ui.column().classes("gap-1.5 w-full lg:w-auto"):
+            habits_title = ui.label("Habits").classes(
+                "text-lg text-primary theme-glow-text"
+            )
+            habits_title.props('role="heading" aria-level="2"')
+
             if settings.ENABLE_TAG_FILTERS:
                 tag_filter_component(active_habits, refresh=habit_list_ui.refresh)
 
@@ -170,6 +175,21 @@ def index_page_ui(
                 ui.label("List is empty.").classes("mx-auto w-80")
             else:
                 habit_list_ui(days, active_habits)
+
+            async def add_habit():
+                name = name_input.value.strip() if name_input.value else ""
+                if not name:
+                    ui.notify("Habit name is required", color="negative")
+                    return
+                await habit_list.add(name)
+                name_input.value = ""
+                index_page_ui.refresh()
+
+            with ui.row().classes("w-full items-center no-wrap"):
+                name_input = ui.input(placeholder="New habit...").classes("grow")
+                name_input.on("keydown.enter", add_habit)
+                add_btn = ui.button("Add", on_click=add_habit)
+                add_btn.props('aria-label="Add habit"')
 
         if unhabit_list is not None:
             with columns, ui.column().classes("gap-1.5 w-full lg:w-auto"):
