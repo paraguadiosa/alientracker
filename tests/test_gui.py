@@ -1,3 +1,4 @@
+import asyncio
 import datetime
 
 from nicegui import ui
@@ -102,3 +103,31 @@ async def test_index_page_todos_column_is_responsive(user) -> None:
     await user.should_see("Habits")
     await user.should_see("Todos")
     await user.should_see(marker="todos-column")
+
+
+async def test_index_page_add_habit(user) -> None:
+    """The inline New habit form adds a habit to the list."""
+    days = dummy_days(7)
+    habits = dummy_habit_list(days)
+    before = len(habits.habits)
+
+    @ui.page("/")
+    def page():
+        index_page_ui(days, habits)
+
+    await user.open("/")
+    await user.should_see("Habits")
+
+    user.find("habit-input").type("Buy milk")
+    user.find("habit-add").click()
+
+    # The add handler runs as a background task, so poll until it completes.
+    for _ in range(50):
+        if len(habits.habits) == before + 1:
+            break
+        await asyncio.sleep(0.1)
+
+    await user.should_see("Buy milk")
+    assert (
+        len(habits.habits) == before + 1
+    ), f"expected {before + 1} habits, got {len(habits.habits)}"

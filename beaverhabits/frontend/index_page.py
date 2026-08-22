@@ -171,26 +171,35 @@ def index_page_ui(
             if settings.ENABLE_TAG_FILTERS:
                 tag_filter_component(active_habits, refresh=habit_list_ui.refresh)
 
-            if not active_habits:
-                ui.label("List is empty.").classes("mx-auto w-80")
-            else:
-                habit_list_ui(days, active_habits)
+            # Defined per page build so a refresh only re-renders the current
+            # client and never touches other connected clients.
+            @ui.refreshable
+            def habit_section():
+                active = get_active_habits(habits)
+                if not active:
+                    ui.label("List is empty.").classes("mx-auto w-80")
+                else:
+                    habit_list_ui(days, active)
+
+            habit_section()
 
             async def add_habit():
                 name = name_input.value.strip() if name_input.value else ""
                 if not name:
                     ui.notify("Habit name is required", color="negative")
                     return
-                await habit_list.add(name)
+                await habits.add(name)
                 name_input.value = ""
-                index_page_ui.refresh()
+                habit_section.refresh()
 
             with ui.row().classes("w-full items-center no-wrap"):
                 name_input = ui.input(placeholder="New habit...").classes("grow")
                 name_input.on("keydown.enter", add_habit)
+                name_input.mark("habit-input")
                 add_btn = ui.button("Add", on_click=add_habit)
                 add_btn.props('aria-label="Add habit"')
                 add_btn.classes("theme-add-btn")
+                add_btn.mark("habit-add")
 
         if unhabit_list is not None:
             with columns, ui.column().classes("gap-1.5 w-full lg:w-auto"):
