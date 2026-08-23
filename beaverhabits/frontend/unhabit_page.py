@@ -19,6 +19,7 @@ NAME_COLS, DATE_COLS = settings.INDEX_HABIT_NAME_COLUMNS, 2
 LEFT_CLASSES = f"col-span-{NAME_COLS} truncate max-w-[{24 * NAME_COLS}px]"
 RIGHT_CLASSES = f"col-span-{DATE_COLS} px-1 place-self-center"
 CARD_CLASSES = "pl-4 pr-2 py-0 dark:shadow-none theme-unhabit-card-shadow w-full"
+HEADER_CLASSES = "pl-4 pr-2 py-0 dark:shadow-none"
 STICKY_STYLES = "position: sticky; top: 0; z-index: 1;"
 
 
@@ -91,7 +92,7 @@ def unhabit_row(
         # Menu button: nested so the QMenu anchors to it and the popup renders
         # on top of the row.
         menu_btn = ui.button(icon="more_vert")
-        menu_btn.props('flat unelevated dense')
+        menu_btn.props("flat unelevated dense")
         menu_btn.props('aria-label="Unhabit actions"')
         menu_btn.classes("theme-unhabit-menu-btn")
         menu_btn.mark("unhabit-menu-btn")
@@ -130,8 +131,8 @@ def unhabit_section(unhabit_list: DictUnhabitList, days: list[datetime.date]):
 
         with ui.column().classes("gap-1.5 w-full"):
             # Date headers.
-            with grid(columns, 2).classes(CARD_CLASSES).style(STICKY_STYLES) as g:
-                g.props('aria-hidden="true"').classes("theme-unhabit-header-date")
+            with grid(columns, 2).classes(HEADER_CLASSES).style(STICKY_STYLES) as g:
+                g.props('aria-hidden="true"').classes("theme-header-date")
                 for it in (week_headers(days), day_headers(days)):
                     ui.label("").classes(LEFT_CLASSES)
                     for label in it:
@@ -161,8 +162,10 @@ def unhabit_section(unhabit_list: DictUnhabitList, days: list[datetime.date]):
         name_input.classes("theme-unhabit-input")
         name_input.on("keydown.enter", add)
         name_input.mark("unhabit-input")
-        add_btn = ui.button("Add", on_click=add)
+        add_btn = ui.button("Add", on_click=add, color=None)
         add_btn.props('aria-label="Add unhabit"')
+        # No `color=primary`: Quasar then adds bg-primary/text-white utilities
+        # (layered !important styles) that beat our theme overrides.
         add_btn.classes("theme-unhabit-btn")
         add_btn.mark("unhabit-add")
 

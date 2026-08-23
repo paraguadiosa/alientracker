@@ -476,15 +476,11 @@ def custom_headers():
     ui.add_head_html(f"<script>{THEME_INIT_JS}</script>")
 
     # Unhabits: red "things to stop doing" section + subtle Add buttons.
-    ui.add_head_html(
-        """
+    ui.add_head_html("""
         <style>
         .theme-unhabit-glow-text {
             color: #ff5555 !important;
             text-shadow: 0 0 6px rgba(255, 85, 85, 0.35);
-        }
-        .theme-unhabit-header-date {
-            color: #a03030;
         }
         .theme-unhabit-card-shadow {
             background-color: transparent !important;
@@ -493,6 +489,8 @@ def custom_headers():
         }
         html[data-theme="light"] .theme-unhabit-card-shadow {
             background-color: var(--th-panel, #e9efe0) !important;
+            border-color: var(--th-line, #c3d4b8) !important;
+            box-shadow: var(--th-card-shadow) !important;
         }
         .theme-unhabit-checkbox .q-checkbox__inner:before {
             border-color: #a03030 !important;
@@ -539,6 +537,11 @@ def custom_headers():
         .theme-unhabit-input .q-field__control:after {
             border-color: #3f1212 !important;
         }
+        html[data-theme="light"] .theme-unhabit-input .q-field__control,
+        html[data-theme="light"] .theme-unhabit-input .q-field__control:before,
+        html[data-theme="light"] .theme-unhabit-input .q-field__control:after {
+            border-color: var(--th-line, #c3d4b8) !important;
+        }
         .theme-unhabit-input .q-field__control:after {
             border-color: #ff5555 !important;
         }
@@ -555,8 +558,7 @@ def custom_headers():
         }
 
         /* Subtle section Add buttons: text only, no box. */
-        .q-btn.theme-add-btn,
-        .q-btn.theme-unhabit-btn {
+        .q-btn.theme-add-btn {
             background-color: transparent !important;
             border: none !important;
             box-shadow: none !important;
@@ -567,12 +569,17 @@ def custom_headers():
         .q-btn.theme-add-btn:hover {
             color: var(--th-accent, #00ff66) !important;
         }
+
+        /* Unhabit primary action: solid red, matching the section palette. */
         .q-btn.theme-unhabit-btn {
-            color: #ff5555 !important;
+            background-color: #a03030 !important;
+            border: 1px solid #ff5555 !important;
+            color: #ffffff !important;
+            box-shadow: none !important;
         }
         .q-btn.theme-unhabit-btn:hover {
-            color: #ff5555 !important;
-            text-shadow: 0 0 6px rgba(255, 85, 85, 0.35);
+            border-color: #ff5555 !important;
+            box-shadow: 0 0 8px rgba(255, 85, 85, 0.35) !important;
         }
 
         /* Subtle 3-dot action buttons: no box, just the icon. */
@@ -583,8 +590,7 @@ def custom_headers():
             box-shadow: none !important;
         }
         </style>
-        """
-    )
+        """)
 
 
 def show_help_dialog():
