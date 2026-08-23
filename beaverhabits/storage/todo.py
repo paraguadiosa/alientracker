@@ -83,5 +83,21 @@ class DictTodoList:
     async def remove(self, todo: DictTodo) -> None:
         self.data["todos"].remove(todo.data)
 
+    async def move(self, todo: DictTodo, new_index: int) -> None:
+        """Move a todo to a new position in the list.
+
+        new_index is the final index after the move (as reported by
+        Sortable.js). Out-of-range indexes are clamped.
+        """
+        todos = self.data["todos"]
+        old_index = next(
+            (i for i, t in enumerate(todos) if t.get("id") == todo.id), None
+        )
+        if old_index is None:
+            return
+        new_index = max(0, min(new_index, len(todos) - 1))
+        item = todos.pop(old_index)
+        todos.insert(new_index, item)
+
     async def clear_done(self) -> None:
         self.data["todos"][:] = [t.data for t in self.todos if not t.done]

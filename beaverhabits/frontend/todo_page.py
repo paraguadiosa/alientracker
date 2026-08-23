@@ -13,6 +13,66 @@ from beaverhabits.storage.todo import DictTodo, DictTodoList
 
 CARD_CLASSES = "pl-4 pr-2 py-0 dark:shadow-none theme-card-shadow w-full"
 
+# Reorder support (drag handle on each row, like the habit order page).
+# The drop handler is registered once per client; the refresh callback is
+# looked up lazily because the todo section is rebuilt when the embedding
+# page refreshes.
+_todo_drop_registered: set[str] = set()
+_todo_script_added: set[str] = set()
+_todo_refresh: dict[str, Callable] = {}
+
+SORTABLE_SCRIPT = """<script type="module">
+import '/statics/libs/sortable.min.js';
+if (!window.__todoSortableInited) {
+    window.__todoSortableInited = true;
+    const initTodoSortable = () => {
+        const el = document.querySelector('.todo-sortable');
+        if (el && !el.__todoSortable) {
+            Sortable.create(el, {
+                handle: '.todo-drag-handle',
+                animation: 150,
+                ghostClass: 'opacity-50',
+                onEnd: (evt) => emitEvent("todo_drop", {
+                    id: evt.item.dataset.todoId,
+                    new_index: evt.newIndex,
+                }),
+            });
+            el.__todoSortable = true;
+        }
+    };
+    document.addEventListener('DOMContentLoaded', initTodoSortable);
+    new MutationObserver(initTodoSortable).observe(document.body, {childList: true, subtree: true});
+}
+</script>"""
+
+
+async def todo_item_drop(e, todo_list: DictTodoList, refresh: Callable | None = None) -> None:
+    """Reorder the todo list after a Sortable drop."""
+    todo_id = e.args["id"]
+    new_index = int(e.args["new_index"])
+    todo = await todo_list.get_todo_by(todo_id)
+    if todo is None:
+        return
+    await todo_list.move(todo, new_index)
+    if refresh:
+        refresh()
+
+
+def register_todo_drop(todo_list: DictTodoList) -> None:
+    """Wire the todo_drop event to the reorder handler, once per client.
+
+    The refresh callback is resolved at event time, so re-renders of the
+    todo section keep working after the embedding page refreshes.
+    """
+    client = ui.context.client
+    if client.id in _todo_drop_registered:
+        return
+    _todo_drop_registered.add(client.id)
+    ui.on(
+        "todo_drop",
+        lambda e: todo_item_drop(e, todo_list, _todo_refresh.get(client.id)),
+    )
+
 
 def todo_edit_dialog(todo: DictTodo) -> ui.dialog:
     async def save():
@@ -59,7 +119,15 @@ def todo_row(todo_list: DictTodoList, todo: DictTodo, refresh: Callable):
             refresh()
 
     card = ui.card().classes(CARD_CLASSES)
+    card.props(f'data-todo-id="{todo.id}"')
+    card.mark("todo-card")
     with card, ui.row().classes("w-full items-center no-wrap"):
+        # Drag handle: reorder the todo, same pattern as the habit order page.
+        handle = ui.icon("drag_indicator")
+        handle.classes("todo-drag-handle cursor-grab")
+        handle.props('aria-hidden="true"')
+        handle.mark("todo-drag-handle")
+
         # Clicking the name toggles done (tracker-style).
         name = ui.label(todo.name).classes("truncate cursor-pointer text-primary")
         name.props(f'role="heading" aria-level="2" aria-label="{todo.name}"')
@@ -123,9 +191,17 @@ def todo_section(todo_list: DictTodoList):
             ui.label("List is empty.").classes("mx-auto w-80")
             return
 
-        with ui.column().classes("gap-1.5 w-full"):
+        with ui.column().classes("todo-sortable gap-1.5 w-full"):
             for todo in todos:
                 todo_row(todo_list, todo, todo_list_ui.refresh)
+
+    # Keep the drop handler wired to the current page and refreshable.
+    client = ui.context.client
+    _todo_refresh[client.id] = todo_list_ui.refresh
+    register_todo_drop(todo_list)
+    if client.id not in _todo_script_added:
+        _todo_script_added.add(client.id)
+        ui.add_body_html(SORTABLE_SCRIPT)
 
     async def add():
         name = name_input.value.strip() if name_input.value else ""

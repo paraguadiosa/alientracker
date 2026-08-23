@@ -325,6 +325,18 @@ body::after {
 .q-toggle.q-toggle--active .q-toggle__inner {
     color: var(--th-accent) !important;
 }
+
+/* Todo drag handle: faint like the menu button, grab cursor */
+.q-icon.todo-drag-handle {
+    color: var(--th-line) !important;
+    cursor: grab;
+}
+.q-icon.todo-drag-handle:active {
+    cursor: grabbing;
+}
+.q-icon.todo-drag-handle:hover {
+    color: var(--th-muted) !important;
+}
 .q-toggle[aria-checked="true"] .q-toggle__track,
 .q-toggle.q-toggle--active .q-toggle__track {
     background-color: var(--th-line) !important;

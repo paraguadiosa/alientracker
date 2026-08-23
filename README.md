@@ -10,6 +10,8 @@ A self-hosted habit tracking app, alien-themed.
   On first use it is seeded with starter todos: "Ir al médico",
   "Aprender a manejar", "Tomar tereré".
   Todos live in the `todos` key of the existing user data store.
+  Drag the handle icon on a todo to reorder it, like habits on the
+  habit order page; the order is saved in the data store.
   Set `TASKS_URL` to link to an external task manager; empty hides the link.
 - Unhabit tracker: things you want to stop doing, shown in red below the
   habits on the main page (`/gui`) and standalone at `/gui/unhabits`.

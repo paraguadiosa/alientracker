@@ -5,8 +5,8 @@ from nicegui import ui
 from nicegui.testing import User
 
 from beaverhabits.frontend.index_page import index_page_ui
-from beaverhabits.frontend.todo_page import todo_page_ui
-from beaverhabits.storage.todo import DictTodoList
+from beaverhabits.frontend.todo_page import todo_item_drop, todo_page_ui
+from beaverhabits.storage.todo import DictTodo, DictTodoList
 from beaverhabits.views import STARTER_TODOS, dummy_habit_list, seed_todo_list
 
 
@@ -77,6 +77,68 @@ async def test_remove_and_clear_done():
 
     await todo_list.remove(todo_list.todos[0])
     assert todo_list.todos == []
+
+
+async def test_move_todo_reorders():
+    todo_list = make_todo_list()
+    await todo_list.add("a")
+    await todo_list.add("b")
+    await todo_list.add("c")
+
+    # Move the first todo to the end (Sortable's final index).
+    await todo_list.move(todo_list.todos[0], 2)
+    assert [t.name for t in todo_list.todos] == ["b", "c", "a"]
+
+    # Move the (now) last todo back to the front.
+    await todo_list.move(todo_list.todos[2], 0)
+    assert [t.name for t in todo_list.todos] == ["a", "b", "c"]
+
+
+async def test_move_todo_clamps_out_of_range_index():
+    todo_list = make_todo_list()
+    await todo_list.add("a")
+    await todo_list.add("b")
+
+    await todo_list.move(todo_list.todos[0], 999)
+    assert [t.name for t in todo_list.todos] == ["b", "a"]
+
+    await todo_list.move(todo_list.todos[1], -5)
+    assert [t.name for t in todo_list.todos] == ["a", "b"]
+
+
+async def test_move_unknown_todo_is_noop():
+    todo_list = make_todo_list()
+    await todo_list.add("a")
+    await todo_list.add("b")
+    ghost = DictTodo({"id": "nope", "name": "ghost", "done": False}, todo_list)
+
+    await todo_list.move(ghost, 0)
+    assert [t.name for t in todo_list.todos] == ["a", "b"]
+
+
+async def test_todo_item_drop_reorders_and_refreshes():
+    from types import SimpleNamespace
+
+    todo_list = make_todo_list()
+    first_id = await todo_list.add("a")
+    await todo_list.add("b")
+    await todo_list.add("c")
+
+    refreshed = []
+
+    def refresh():
+        refreshed.append(True)
+
+    e = SimpleNamespace(args={"id": first_id, "new_index": 2})
+    await todo_item_drop(e, todo_list, refresh=refresh)
+    assert [t.name for t in todo_list.todos] == ["b", "c", "a"]
+    assert refreshed == [True]
+
+    # Unknown todo id: nothing changes and nothing refreshes.
+    e = SimpleNamespace(args={"id": "missing", "new_index": 0})
+    await todo_item_drop(e, todo_list, refresh=refresh)
+    assert [t.name for t in todo_list.todos] == ["b", "c", "a"]
+    assert refreshed == [True]
 
 
 async def test_todos_share_dict_with_habits():
@@ -281,6 +343,57 @@ async def test_tasks_link_shown_when_url_set(user: User):
         assert link._props.get("href") == "https://tasks.example.com"
     finally:
         settings.TASKS_URL = original
+
+
+async def test_todo_rows_have_drag_handle(user: User):
+    """Each todo row renders a drag handle and carries its id for Sortable."""
+    todo_list = make_todo_list()
+
+    @ui.page("/")
+    def page():
+        todo_page_ui(todo_list)
+
+    await user.open("/")
+    await user.should_see("List is empty.")
+
+    user.find("todo-input").type("Buy milk")
+    user.find("todo-add").click()
+    await asyncio.sleep(0.1)
+    await user.should_see("Buy milk")
+
+    handle_element = user.find("todo-drag-handle")
+    handle = next(iter(handle_element.elements))
+    assert "todo-drag-handle" in handle._classes
+    assert handle._props.get("aria-hidden") == "true"
+
+    card_element = user.find("todo-card")
+    card = next(iter(card_element.elements))
+    assert card._props.get("data-todo-id")
+
+
+async def test_register_todo_drop_dedupes(user: User):
+    """Rebuilding the todo section (page refresh) does not double-register."""
+    from beaverhabits.frontend.todo_page import (
+        _todo_drop_registered,
+        register_todo_drop,
+    )
+
+    todo_list = make_todo_list()
+
+    @ui.page("/")
+    def page():
+        todo_page_ui(todo_list)
+        register_todo_drop(todo_list)  # section rebuild: must be a no-op
+        listeners = [
+            l
+            for l in ui.context.client.layout._event_listeners.values()
+            if l.type == "todo_drop"
+        ]
+        assert len(listeners) == 1
+
+    await user.open("/")
+    await user.should_see("List is empty.")
+    assert len(_todo_drop_registered) >= 1
 
 
 async def test_tasks_link_hidden_when_url_empty(user: User):
