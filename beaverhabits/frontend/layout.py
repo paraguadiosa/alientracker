@@ -90,7 +90,8 @@ html[data-theme="light"] {
 body, h1, h2, h3, h4, h5, h6,
 input, textarea, select, button,
 .q-btn, .q-field, .q-item, .q-card, .q-menu, .q-dialog {
-    font-family: "JetBrains Mono", "Cascadia Code", "Fira Code", Consolas, "Courier New", monospace !important;
+    font-family: "JetBrains Mono", "Cascadia Code", "Fira Code",
+        ui-monospace, "SF Mono", Menlo, Consolas, "Courier New", monospace !important;
 }
 
 body, body.body--dark, .q-layout, .q-page-container, .q-page {
@@ -100,12 +101,92 @@ body, body.body--dark, .q-layout, .q-page-container, .q-page {
 
 /* Scale the whole UI by 1.5x on large screens only.
    Mobile keeps zoom 1 so the layout fits the viewport. */
+/* Keep flex and grid children shrinkable so long content never
+   forces horizontal page scroll. */
+.nicegui-content > *,
+.nicegui-row > *,
+.nicegui-column > *,
+.nicegui-grid > * {
+    min-width: 0;
+}
+
+/* User note images must fit the viewport. */
+.q-page img,
+.q-timeline img {
+    max-width: 100%;
+    height: auto;
+}
+
 body {
     zoom: 1.5;
 }
+
+/* Heatmap calendars scroll horizontally inside their card when the
+   weeks do not fit, instead of pushing the page wide. */
+.theme-heatmap {
+    --hm-cell: 20px;
+    --hm-week: 22px;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    padding-bottom: 2px;
+}
+.theme-hm-cell,
+.theme-heatmap .q-checkbox {
+    width: var(--hm-cell);
+    min-width: var(--hm-cell);
+    height: var(--hm-cell);
+    min-height: var(--hm-cell);
+    flex: none;
+}
+/* The cell carries Quasar's `.inline-block` utility with !important and
+   is a flex item, so it blockifies; the inner box below fills the cell
+   exactly, which centers the glyph on both axes. Hide the empty text
+   label so it can never add width or height to the cell. */
+.theme-heatmap .q-checkbox .q-checkbox__label {
+    display: none;
+}
+/* Size the Quasar control and its icon glyph to the cell. Do not rely on
+   Quasar's em-based internals: pin every box to the cell in px. */
+.theme-heatmap .q-checkbox--dense .q-checkbox__inner {
+    width: var(--hm-cell);
+    min-width: var(--hm-cell);
+    height: var(--hm-cell);
+    min-height: var(--hm-cell);
+    font-size: var(--hm-cell);
+    line-height: var(--hm-cell);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.theme-heatmap .q-checkbox--dense .q-checkbox__icon {
+    font-size: var(--hm-cell);
+    line-height: 1;
+}
+.theme-hm-head {
+    width: var(--hm-cell);
+    min-width: var(--hm-cell);
+    height: var(--hm-cell);
+    line-height: var(--hm-cell);
+    font-size: 9px;
+    text-align: center;
+    flex: none;
+}
+.theme-hm-week {
+    width: var(--hm-week);
+    min-width: var(--hm-week);
+    line-height: var(--hm-cell);
+    font-size: 9px;
+    flex: none;
+}
+
 @media (max-width: 640px) {
     body {
         zoom: 1;
+        font-size: 16px;
+        touch-action: manipulation;
     }
 
     /* Comfortable touch targets on phones. */
@@ -115,11 +196,36 @@ body {
         min-width: 44px !important;
         min-height: 44px !important;
     }
+    .q-btn:not(.q-btn--round):not(.q-btn--fab):not(.q-btn--dense) {
+        min-height: 44px;
+    }
+    .q-field--dense .q-field__control {
+        min-height: 44px;
+    }
+
+    /* Habit grid rows: whole-cell tap areas, 44px tall. */
+    .nicegui-grid:not(.theme-header-date) > * {
+        min-height: 44px;
+    }
+    .nicegui-grid:not(.theme-header-date) > a {
+        line-height: 44px;
+    }
+    .nicegui-grid .q-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
 
     /* The date grid gets tight on small screens: keep it scrollable
        instead of squashing the name column. */
     .nicegui-grid {
         min-width: 0;
+    }
+
+    /* Sticky date header keeps its own background while scrolling. */
+    .theme-sticky {
+        background-color: var(--th-header);
+        border-bottom: 1px solid var(--th-line);
     }
 
     .q-page .nicegui-card {
@@ -129,6 +235,74 @@ body {
     .q-input input,
     .q-field__native {
         font-size: 16px; /* prevents iOS zoom on focus */
+    }
+
+    /* Keep dialogs and popup menus inside the viewport. */
+    .q-dialog .q-card,
+    .q-menu {
+        max-width: calc(100vw - 24px);
+    }
+
+    /* Bigger heatmap cells are easier to tap; the container scrolls. */
+    .theme-heatmap {
+        --hm-cell: 26px;
+        --hm-week: 26px;
+    }
+
+    /* Todo rows: taller name tap area and 44px minimum height. */
+    .theme-todo-row {
+        min-height: 44px;
+    }
+    .theme-todo-name {
+        padding: 12px 0;
+    }
+
+    /* Room for the iOS home indicator in standalone mode. */
+    .q-page {
+        padding-bottom: env(safe-area-inset-bottom);
+    }
+}
+
+@media (max-width: 360px) {
+    /* Five date columns still fit on 320px screens with smaller checks.
+       The heatmap is excluded: its cells keep their own --hm-cell size
+       on every viewport width. */
+    .nicegui-grid:not(.theme-header-date):not(.theme-heatmap) .q-checkbox__inner {
+        font-size: 32px;
+    }
+    .nicegui-grid:not(.theme-header-date):not(.theme-heatmap) .q-checkbox {
+        padding-left: 2px;
+        padding-right: 2px;
+    }
+    /* Belt and braces: re-pin the heatmap glyph to the cell so no grid
+       rule can ever enlarge it on the narrowest screens. */
+    .theme-heatmap .q-checkbox__inner {
+        font-size: var(--hm-cell);
+    }
+    .theme-heatmap .q-checkbox {
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    /* Calendar navigation arrows stay inside the card on 320px screens. */
+    .q-date__navigation,
+    .q-date__navigation > * {
+        min-width: 0;
+    }
+    .q-date__navigation > div:first-child,
+    .q-date__navigation > div:last-child {
+        width: auto;
+        min-width: 36px;
+    }
+    .q-date__navigation .q-date__arrow {
+        flex: none;
+    }
+    .q-date__navigation {
+        flex-wrap: wrap;
+    }
+    .q-date__navigation .q-btn[aria-label] {
+        min-width: 36px !important;
+        min-height: 36px !important;
     }
 }
 
@@ -377,6 +551,33 @@ THEME_TOGGLE_JS = """\
 })();
 """
 
+# On phones the heatmap cells are enlarged and the container scrolls.
+# Show the end (current week) whenever a heatmap is (re)rendered.
+HEATMAP_SCROLL_JS = """\
+(function () {
+    function scrollHeatmapsToEnd() {
+        if (window.innerWidth > 640) return;
+        document.querySelectorAll('.theme-heatmap').forEach(function (el) {
+            if (el.dataset.scrolled) return;
+            // Wait until all rows have streamed in before scrolling.
+            if (el.scrollWidth <= el.clientWidth) return;
+            el.dataset.scrolled = '1';
+            el.scrollLeft = el.scrollWidth;
+        });
+    }
+    new MutationObserver(scrollHeatmapsToEnd).observe(document.body, {
+        childList: true,
+        subtree: true,
+    });
+    var tries = 0;
+    var timer = setInterval(function () {
+        scrollHeatmapsToEnd();
+        if (++tries > 40) clearInterval(timer);
+    }, 250);
+    window.addEventListener('load', scrollHeatmapsToEnd);
+})();
+"""
+
 
 def pwa_headers():
     # Extend background to iOS notch
@@ -467,6 +668,9 @@ def custom_headers():
 
     # keep Quasar overlays anchored to their targets despite the CSS zoom
     ui.add_body_html(f"<script>{FIX_ZOOM_POSITIONS}</script>")
+
+    # keep the current week visible when a heatmap scrolls on phones
+    ui.add_body_html(f"<script>{HEATMAP_SCROLL_JS}</script>")
 
     # custom css styles
     views.apply_theme_style()
@@ -596,7 +800,7 @@ def custom_headers():
 def show_help_dialog():
     with ui.context.client.content:
         with ui.dialog() as dialog:
-            with compat_card().classes("w-[360px]"):
+            with compat_card().classes("w-[360px] max-w-full"):
                 title = IDENTITY.replace("/", " ")
                 title = title.split("@")[0] if "@" in title else title
                 ui.label(title).classes("text-lg font-bold")
@@ -713,8 +917,8 @@ def layout(
     custom_headers()
     pwa_headers()
 
-    # Center the content on small screens
-    with ui.column().classes("mx-auto mx-0"):
+    # Full-width content column with page padding from nicegui-content
+    with ui.column().classes("w-full"):
 
         # Layout wrapper
         with ui.row().classes("w-full gap-x-1"):

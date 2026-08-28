@@ -66,7 +66,7 @@ def add_ui(habit_list: HabitList):
                 continue
 
         with components.HabitOrderCard(item) as card:
-            with ui.row().classes("min-h-10 w-80 items-center gap-2"):
+            with ui.row().classes("min-h-11 w-80 max-w-full items-center gap-2"):
                 ui.label(item.name)
 
                 ui.space()
@@ -91,8 +91,7 @@ def order_page_ui(habit_list: HabitList):
         with ui.column().classes("items-center sortable gap-2 w-full"):
             add_ui(habit_list)
 
-    ui.add_body_html(
-        """
+    ui.add_body_html("""
         <script type="module">
         import '/statics/libs/sortable.min.js';
         document.addEventListener('DOMContentLoaded', () => {
@@ -103,7 +102,6 @@ def order_page_ui(habit_list: HabitList):
             });
         });
         </script>
-        """
-    )
+        """)
 
     ui.on("item_drop", lambda e: item_drop(e, habit_list))

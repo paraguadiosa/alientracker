@@ -121,7 +121,7 @@ def todo_row(todo_list: DictTodoList, todo: DictTodo, refresh: Callable):
     card = ui.card().classes(CARD_CLASSES)
     card.props(f'data-todo-id="{todo.id}"')
     card.mark("todo-card")
-    with card, ui.row().classes("w-full items-center no-wrap"):
+    with card, ui.row().classes("w-full items-center no-wrap theme-todo-row"):
         # Drag handle: reorder the todo, same pattern as the habit order page.
         handle = ui.icon("drag_indicator")
         handle.classes("todo-drag-handle cursor-grab")
@@ -129,7 +129,9 @@ def todo_row(todo_list: DictTodoList, todo: DictTodo, refresh: Callable):
         handle.mark("todo-drag-handle")
 
         # Clicking the name toggles done (tracker-style).
-        name = ui.label(todo.name).classes("truncate cursor-pointer text-primary")
+        name = ui.label(todo.name).classes(
+            "truncate cursor-pointer text-primary theme-todo-name"
+        )
         name.props(f'role="heading" aria-level="2" aria-label="{todo.name}"')
         if todo.done:
             # Dim green strikethrough; inline !important wins over .text-primary.
@@ -144,7 +146,7 @@ def todo_row(todo_list: DictTodoList, todo: DictTodo, refresh: Callable):
         # Menu button: the QMenu is nested inside so Quasar anchors it
         # to the button and the popup renders on top of it.
         menu_btn = ui.button(icon="more_vert")
-        menu_btn.props('flat unelevated dense')
+        menu_btn.props("flat unelevated dense")
         menu_btn.classes("todo-menu-faint")
         menu_btn.props('aria-label="Todo actions"')
         menu_btn.mark("todo-menu-btn")
@@ -188,7 +190,7 @@ def todo_section(todo_list: DictTodoList):
     def todo_list_ui():
         todos = todo_list.todos
         if not todos:
-            ui.label("List is empty.").classes("mx-auto w-80")
+            ui.label("List is empty.").classes("mx-auto w-80 max-w-full")
             return
 
         with ui.column().classes("todo-sortable gap-1.5 w-full"):

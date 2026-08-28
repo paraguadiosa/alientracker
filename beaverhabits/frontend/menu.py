@@ -99,7 +99,7 @@ def stats_date_pick_menu():
                 today - datetime.timedelta(weeks=26),
                 today,
             )
-        date_input = ui.input("Date range", value=date_str).classes("w-64")
+        date_input = ui.input("Date range", value=date_str).classes("w-64 max-w-full")
 
         with ui.row():
             ui.button("Apply", on_click=apply_custom_date_range)

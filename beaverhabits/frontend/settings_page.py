@@ -28,7 +28,7 @@ async def settings_page(user: User):
             ui.dark_mode().disable()
 
     with layout(title="Settings"):
-        with ui.column().classes("w-[600px]"):
+        with ui.column().classes("w-full max-w-[600px]"):
             ui.label("Darkmode").classes("text-lg font-bold")
             with ui.row():
                 ui.button("Dark", on_click=lambda: toggle_dark_mode(True))

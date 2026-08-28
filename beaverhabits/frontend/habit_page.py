@@ -45,7 +45,7 @@ def card(link: str | None = None, padding: float = 3, width: int | None = 350):
         card.classes(f"p-{padding}")
         card.classes("w-full break-inside-avoid h-fit")
         if width is not None:
-            card.style(f"max-width: {width}px")
+            card.style(f"max-width: min({width}px, 100%)")
         if link:
             card.classes("cursor-pointer")
             card.on("click", lambda: redirect(link))
@@ -57,7 +57,7 @@ def card(link: str | None = None, padding: float = 3, width: int | None = 350):
 def habit_page(today: datetime.date, habit: Habit):
     target = get_habit_heatmap_path(habit)
 
-    with ui.column().classes("gap-y-2"):
+    with ui.column().classes("gap-y-2 w-full"):
         with card():
             HabitDateInput(
                 today, habit, refreshs=[habit_heat_map.refresh, habit_history.refresh]

@@ -1,0 +1,15 @@
+[Unit]
+Description=DeepSeek Harness (dsh) Web GUI - agent daemon
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/eve/repos/deepseek-harness
+Environment=PATH=/home/eve/repos/deepseek-harness/node_modules/.bin:/home/eve/.cache/node/corepack/v1/pnpm/11.7.0/dist/node-gyp-bin:/home/eve/.local/share/pi-node/node-v22.23.1-linux-x64/bin:/home/eve/.local/bin:/usr/local/bin:/usr/bin:/bin
+ExecStart=/home/eve/.local/share/pi-node/node-v22.23.1-linux-x64/bin/node /home/eve/.local/share/pi-node/node-v22.23.1-linux-x64/bin/pnpm dsh web --no-open
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=default.target

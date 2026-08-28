@@ -142,7 +142,7 @@ async def habit_tick_dialog(habit: Habit, day: datetime.date):
 
     with ui.dialog() as dialog, ui.card().props("flat") as card:
         dialog.props('backdrop-filter="blur(4px)"')
-        card.classes("w-[640px]")
+        card.classes("w-full max-w-[640px]")
 
         with ui.column().classes("gap-0 w-full"):
             t = Textarea(
@@ -747,32 +747,29 @@ def habit_heat_map(
     # Habit completions
     status_map = get_habit_date_completion(habit, calendar.first_day, today)
 
-    with ui.column().classes("gap-0"):
+    # The container scrolls horizontally when the weeks do not fit.
+    with ui.column().classes("gap-0 theme-heatmap"):
         # Headers
-        with ui.row(wrap=False).classes("gap-0"):
+        with ui.row(wrap=False).classes("gap-0 mx-auto"):
             for header in calendar.headers:
                 header_lable = ui.label(header).classes(
-                    "text-gray-600 dark:text-gray-300 text-center"
+                    "theme-hm-head text-gray-600 dark:text-gray-300"
                 )
-                header_lable.style("width: 20px; line-height: 18px; font-size: 9px;")
-            ui.label().style("width: 22px;")
+            ui.label().classes("theme-hm-week")
 
         # Day matrix
         for i, weekday_days in enumerate(calendar.data):
-            with ui.row(wrap=False).classes("gap-0"):
+            with ui.row(wrap=False).classes("gap-0 mx-auto"):
                 for day in weekday_days:
                     if day <= calendar.today:
                         status = status_map.get(day, [])
                         CalendarCheckBox(habit, day, status, readonly, refresh=refresh)
                     else:
-                        ui.label().style("width: 20px; height: 20px;")
+                        ui.label().classes("theme-hm-cell")
 
                 week_day_abbr_label = ui.label(calendar.week_days[i])
                 week_day_abbr_label.classes(
-                    "indent-1.5 text-gray-600 dark:text-gray-300"
-                )
-                week_day_abbr_label.style(
-                    "width: 22px; line-height: 20px; font-size: 9px;"
+                    "theme-hm-week indent-1.5 text-gray-600 dark:text-gray-300"
                 )
 
 
@@ -1057,8 +1054,7 @@ def tag_filter_component(active_habits: list[Habit], refresh: Callable):
         TagChip("Others", refresh=refresh)
 
         row.classes("tag-filter")
-        ui.run_javascript(
-            """
+        ui.run_javascript("""
             const element = document.querySelector(".tag-filter");
         
             // scroll event
@@ -1085,8 +1081,7 @@ def tag_filter_component(active_habits: list[Habit], refresh: Callable):
                     element.classList.remove("hidden");
                 }
             }, { passive: true  });
-            """
-        )
+            """)
 
 
 def filter_habits_with_tags(active_habits: list[Habit]) -> list[Habit]:
@@ -1302,7 +1297,9 @@ def habit_edit_dialog(habit: Habit) -> ui.dialog:
                 ).classes("flex-grow")
                 ui.icon("help_outline", size="xs").classes(
                     "cursor-pointer opacity-30 hover:opacity-80"
-                ).style("margin-top: 20px").tooltip("Edit default completion status").on(
+                ).style("margin-top: 20px").tooltip(
+                    "Edit default completion status"
+                ).on(
                     "click", lambda: redirect("completion-status")
                 )
 
@@ -1357,7 +1354,7 @@ def auth_password(title: str = "Password", value: str | None = None):
 
 @contextmanager
 def auth_card(title: str, func: Callable):
-    with ui.card().classes("absolute-center shadow-none w-80 sm:w-96"):
+    with ui.card().classes("absolute-center shadow-none w-80 max-w-full sm:w-96"):
         with ui.column().classes("w-full gap-4"):
             auth_header(title)
             yield

@@ -101,7 +101,7 @@ def habit_list_ui(days: list[datetime.date], active_habits: List[Habit]):
     with ui.column().classes("gap-1.5"):
         # Date Headers
         with grid(columns, 2).classes(COMPAT_CLASSES).style(STICKY_STYLES) as g:
-            g.props('aria-hidden="true"').classes("theme-header-date")
+            g.props('aria-hidden="true"').classes("theme-header-date theme-sticky")
             for it in (week_headers(days), day_headers(days)):
                 ui.label("").classes(LEFT_CLASSES)
                 for label in it:
@@ -158,9 +158,7 @@ def index_page_ui(
 
     with layout(habit_list=habits):
         # Stack on mobile, side by side on large screens.
-        columns = ui.row().classes(
-            "w-full items-start gap-4 flex-col lg:flex-row"
-        )
+        columns = ui.row().classes("w-full items-start gap-4 flex-col lg:flex-row")
 
         with columns, ui.column().classes("gap-1.5 w-full lg:w-auto"):
             habits_title = ui.label("Habits").classes(
@@ -177,7 +175,7 @@ def index_page_ui(
             def habit_section():
                 active = get_active_habits(habits)
                 if not active:
-                    ui.label("List is empty.").classes("mx-auto w-80")
+                    ui.label("List is empty.").classes("mx-auto w-80 max-w-full")
                 else:
                     habit_list_ui(days, active)
 
@@ -206,9 +204,16 @@ def index_page_ui(
                 unhabit_section(unhabit_list, days)
 
         if todo_list is not None:
-            with columns, ui.column().classes("w-full lg:w-[340px] shrink-0 gap-1.5") as todos_col:
+            with (
+                columns,
+                ui.column().classes(
+                    "w-full lg:w-[340px] shrink-0 gap-1.5"
+                ) as todos_col,
+            ):
                 todos_col.mark("todos-column")
-                todos_title = ui.label("Todos").classes("text-lg text-primary theme-glow-text")
+                todos_title = ui.label("Todos").classes(
+                    "text-lg text-primary theme-glow-text"
+                )
                 todos_title.props('role="heading" aria-level="2"')
                 todo_section(todo_list)
 
