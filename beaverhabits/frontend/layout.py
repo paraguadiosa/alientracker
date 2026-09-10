@@ -210,6 +210,14 @@ body {
     .nicegui-grid:not(.theme-header-date) > a {
         line-height: 44px;
     }
+    /* Habit cards carry no visible action button, unlike unhabit and todo
+       rows. The hidden long-press menu leaves their grid shorter on phones.
+       Pin the habit grid to the unhabit natural row height. Todo cards share
+       .theme-card-shadow but use a row, not a .nicegui-grid, so they are
+       unaffected. */
+    .theme-card-shadow .nicegui-grid {
+        min-height: 52px;
+    }
     .nicegui-grid .q-badge {
         display: inline-flex;
         align-items: center;
