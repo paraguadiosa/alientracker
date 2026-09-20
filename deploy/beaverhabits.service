@@ -1,0 +1,21 @@
+[Unit]
+Description=Alien Tracker (beaverhabits fork) - habits app on port 8081
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/eve/repos/alientracker
+Environment=HABITS_STORAGE=DATABASE
+Environment=MAX_USER_COUNT=1
+Environment=TIME_ZONE=America/Asuncion
+Environment=NICEGUI_STORAGE_PATH=/home/eve/repos/alientracker/.user/.nicegui
+# Bind solo a la IP del tailnet (100.95.188.29). Antes estaba en 0.0.0.0,
+# lo que exponía el endpoint de hábitos también en la LAN/WiFi física.
+# zero (Lain) y Eve llegan por el tailnet; no se pierde acceso legítimo.
+ExecStart=/home/eve/repos/alientracker/.venv/bin/gunicorn beaverhabits.main:app --bind 100.95.188.29:8081 -w 1 -k uvicorn_worker.UvicornWorker --max-requests 10000 --log-level info
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target
